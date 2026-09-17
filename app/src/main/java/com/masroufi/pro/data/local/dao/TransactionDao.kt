@@ -38,7 +38,7 @@ interface TransactionDao {
     suspend fun updateTransaction(transaction: TransactionEntity)
 
     @Query("UPDATE transactions SET isDeleted = 1, updatedAt = :now WHERE id = :id")
-    suspend fun softDeleteTransaction(id: String, now: Long = System.currentTimeMillis())
+    suspend fun softDeleteTransaction(id: String, now: Long)
 
     @Query("SELECT SUM(amount) FROM transactions WHERE isDeleted = 0 AND type = :type")
     fun getTotalByType(type: TransactionType): Flow<Double?>

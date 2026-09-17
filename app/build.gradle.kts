@@ -20,7 +20,7 @@ val supabaseKey = localProperties.getProperty("supabase.anon.key") ?: ""
 
 android {
     namespace = "com.masroufi.pro"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.masroufi.pro"

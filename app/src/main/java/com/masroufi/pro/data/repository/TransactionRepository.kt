@@ -43,7 +43,7 @@ class TransactionRepository @Inject constructor(
     }
 
     suspend fun deleteTransaction(id: String) {
-        transactionDao.softDeleteTransaction(id)
+        transactionDao.softDeleteTransaction(id, System.currentTimeMillis())
     }
 
     fun getTotalByType(type: TransactionType): Flow<Double?> =
