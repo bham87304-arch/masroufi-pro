@@ -152,8 +152,9 @@ fun SettingsScreen(
                 title = { Text("Select Currency") },
                 text = {
                     LazyColumn {
-                        items(Currency.supportedCurrencies.size) { index ->
-                            val currency = Currency.supportedCurrencies[index]
+                        val currencies = Currency.getSupportedCurrencies()
+                        items(currencies.size) { index ->
+                            val currency = currencies[index]
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -162,11 +163,11 @@ fun SettingsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RadioButton(
-                                    checked = currency.code == uiState.currency,
+                                    selected = currency.code == uiState.currency,
                                     onClick = { viewModel.setCurrency(currency.code) }
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("${currency.flag} ${currency.name} (${currency.code})")
+                                Text("${currency.symbol} ${currency.name} (${currency.code})")
                             }
                         }
                     }
@@ -199,7 +200,7 @@ fun SettingsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RadioButton(
-                                    checked = code == uiState.language,
+                                    selected = code == uiState.language,
                                     onClick = { viewModel.setLanguage(code) }
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -231,7 +232,7 @@ fun SettingsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RadioButton(
-                                    checked = mode == uiState.themeMode,
+                                    selected = mode == uiState.themeMode,
                                     onClick = { viewModel.setTheme(mode) }
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
