@@ -41,13 +41,23 @@ fun mapIconName(name: String): ImageVector {
     return when (name) {
         "shopping_cart" -> Icons.Default.ShoppingCart
         "home" -> Icons.Default.Home
-        "directions_car" -> Icons.Default.DirectionsCar
-        "fastfood" -> Icons.Default.Fastfood
-        "health_and_safety" -> Icons.Default.Favorite
-        "attach_money" -> Icons.Default.AttachMoney
-        "account_balance_wallet" -> Icons.Default.AccountBalanceWallet
-        "school" -> Icons.Default.CheckCircle // fallback for now
-        "flight" -> Icons.Default.Place // fallback
-        else -> Icons.Default.Category
+        "directions_car" -> Icons.Default.Place
+        "phone" -> Icons.Default.Phone
+        "restaurant" -> Icons.Default.Star
+        "checkroom" -> Icons.Default.Person
+        "medical_services" -> Icons.Default.Favorite
+        "sports_esports" -> Icons.Default.Star
+        "school" -> Icons.Default.Person
+        "spa" -> Icons.Default.FavoriteBorder
+        "flight" -> Icons.Default.Place
+        "more_horiz" -> Icons.Default.MoreHoriz
+        "payments" -> Icons.Default.AttachMoney
+        "work" -> Icons.Default.Work
+        "card_giftcard" -> Icons.Default.CardGiftcard
+        "trending_up" -> Icons.Default.TrendingUp
+        "savings" -> Icons.Default.AttachMoney
+        "account_balance" -> Icons.Default.Home
+        "account_balance_wallet" -> Icons.Default.AttachMoney
+        else -> Icons.Default.Star
     }
 }

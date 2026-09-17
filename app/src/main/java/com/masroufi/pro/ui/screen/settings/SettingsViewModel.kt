@@ -2,39 +2,110 @@ package com.masroufi.pro.ui.screen.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masroufi.pro.data.preferences.UserPreferences
 import com.masroufi.pro.data.preferences.UserPreferencesManager
-import com.masroufi.pro.data.repository.AccountRepository
-import com.masroufi.pro.data.repository.CategoryRepository
-import com.masroufi.pro.data.repository.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SettingsUiState(
-    val preferences: UserPreferences = UserPreferences(),
-    val exportStatus: String = ""
+    val currency: String = "DZD",
+    val themeMode: String = "system",
+    val language: String = "en",
+    val isReminderEnabled: Boolean = false,
+    val showCurrencyDialog: Boolean = false,
+    val showThemeDialog: Boolean = false,
+    val showLanguageDialog: Boolean = false,
+    val showClearDataDialog: Boolean = false
 )
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userPreferencesManager: UserPreferencesManager,
-    private val transactionRepository: TransactionRepository,
-    private val categoryRepository: CategoryRepository,
-    private val accountRepository: AccountRepository
+    private val userPreferencesManager: UserPreferencesManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
-    fun setCurrency(currency: String) {}
-    fun setTheme(theme: String) {}
-    fun setLanguage(language: String) {}
-    fun toggleReminder(enabled: Boolean) {}
-    fun setReminderTime(time: String) {}
-    fun exportData() {}
-    fun clearData() {}
+    init {
+        viewModelScope.launch {
+            userPreferencesManager.userPreferencesFlow.collect { prefs ->
+                _uiState.update {
+                    it.copy(
+                        currency = prefs.defaultCurrency,
+                        themeMode = prefs.themeMode,
+                        language = prefs.language,
+                        isReminderEnabled = prefs.reminderEnabled
+                    )
+                }
+            }
+        }
+    }
+
+    fun setCurrency(currencyCode: String) {
+        viewModelScope.launch {
+            userPreferencesManager.setDefaultCurrency(currencyCode)
+            hideCurrencyDialog()
+        }
+    }
+
+    fun setTheme(themeMode: String) {
+        viewModelScope.launch {
+            userPreferencesManager.setThemeMode(themeMode)
+            hideThemeDialog()
+        }
+    }
+
+    fun setLanguage(language: String) {
+        viewModelScope.launch {
+            userPreferencesManager.setLanguage(language)
+            hideLanguageDialog()
+        }
+    }
+
+    fun toggleReminder(enabled: Boolean) {
+        viewModelScope.launch {
+            userPreferencesManager.setReminderEnabled(enabled)
+        }
+    }
+
+    fun clearData() {
+        // Not implemented yet
+        hideClearDataDialog()
+    }
+
+    fun showCurrencyDialog() {
+        _uiState.update { it.copy(showCurrencyDialog = true) }
+    }
+
+    fun hideCurrencyDialog() {
+        _uiState.update { it.copy(showCurrencyDialog = false) }
+    }
+
+    fun showThemeDialog() {
+        _uiState.update { it.copy(showThemeDialog = true) }
+    }
+
+    fun hideThemeDialog() {
+        _uiState.update { it.copy(showThemeDialog = false) }
+    }
+
+    fun showLanguageDialog() {
+        _uiState.update { it.copy(showLanguageDialog = true) }
+    }
+
+    fun hideLanguageDialog() {
+        _uiState.update { it.copy(showLanguageDialog = false) }
+    }
+
+    fun showClearDataDialog() {
+        _uiState.update { it.copy(showClearDataDialog = true) }
+    }
+
+    fun hideClearDataDialog() {
+        _uiState.update { it.copy(showClearDataDialog = false) }
+    }
 }

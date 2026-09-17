@@ -116,7 +116,7 @@ fun MasroufiNavHost() {
             composable(Screen.Dashboard.route) { DashboardScreen(navController) }
             composable(Screen.History.route) { HistoryScreen(navController) }
             composable(Screen.Stats.route) { StatsScreen() }
-            composable(Screen.Settings.route) { SettingsScreen() }
+            composable(Screen.Settings.route) { SettingsScreen(navController = navController) }
 
             // Add/Edit Transaction
             composable(

@@ -3,7 +3,19 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- Wallet Body Outline -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M31 63v-18h18v18h-18zM31 31h46v18H31V31zm18 32h28v-14H49v14z" />
+        android:pathData="M 24,38 C 24,33.58 27.58,30 32,30 L 76,30 C 80.42,30 84,33.58 84,38 L 84,42 L 60,42 C 53.37,42 48,47.37 48,54 C 48,60.63 53.37,66 60,66 L 84,66 L 84,70 C 84,74.42 80.42,78 76,78 L 32,78 C 27.58,78 24,74.42 24,70 Z" />
+
+    <!-- Wallet Flap / Pocket -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 84,48 L 60,48 C 56.69,48 54,50.69 54,54 C 54,57.31 56.69,60 60,60 L 84,60 Z" />
+        
+    <!-- Coin inside flap or near it (optional detail) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 68,54 m -2.5,0 a 2.5,2.5 0 1,1 5,0 a 2.5,2.5 0 1,1 -5,0" />
 </vector>
