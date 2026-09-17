@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.MasroufiPro" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary Brand Colors -->
-        <item name="colorPrimary">#2E7D32</item>
-        <item name="colorSecondary">#388E3C</item>
-        <item name="colorTertiary">#4CAF50</item>
-        
-        <!-- Background colors -->
-        <item name="android:windowBackground">?attr/colorSurface</item>
+    <!-- Base theme for the app - minimal since all UI is Compose Material 3 -->
+    <style name="Theme.MasroufiPro" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>
