@@ -65,6 +65,7 @@
     <string name="theme_system">تلقائي</string>
     <string name="notifications">الإشعارات</string>
     <string name="daily_reminder">تذكير يومي</string>
+    <string name="daily_reminder_message">لا تنسى تسجيل مصاريفك اليوم! 💰</string>
     <string name="reminder_time">وقت التذكير</string>
     <string name="data">البيانات</string>
     <string name="export_csv">تصدير إلى CSV</string>

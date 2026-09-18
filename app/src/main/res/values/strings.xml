@@ -65,6 +65,7 @@
     <string name="theme_system">System Default</string>
     <string name="notifications">Notifications</string>
     <string name="daily_reminder">Daily Reminder</string>
+    <string name="daily_reminder_message">Don\'t forget to track your expenses today! 💰</string>
     <string name="reminder_time">Reminder Time</string>
     <string name="data">Data</string>
     <string name="export_csv">Export to CSV</string>

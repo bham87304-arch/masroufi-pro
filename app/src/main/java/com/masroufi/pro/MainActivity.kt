@@ -12,9 +12,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.masroufi.pro.data.preferences.UserPreferences
 import com.masroufi.pro.data.preferences.UserPreferencesManager
@@ -30,12 +27,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var userPreferencesManager: UserPreferencesManager
 
-    private var currentLanguage: String? = null
-
     override fun attachBaseContext(newBase: Context) {
-        // Read the saved language synchronously from the DataStore preferences file
-        // DataStore stores preferences in an XML file at: data/data/pkg/files/datastore/user_preferences.preferences_pb
-        // We can't read protobuf easily, so use a SharedPreferences fallback
         val prefs = newBase.getSharedPreferences("language_prefs", Context.MODE_PRIVATE)
         val lang = prefs.getString("app_language", "en") ?: "en"
         val locale = Locale(lang)
@@ -53,21 +45,17 @@ class MainActivity : ComponentActivity() {
             val preferences by userPreferencesManager.userPreferencesFlow
                 .collectAsState(initial = UserPreferences())
 
-            // When language changes, save to SharedPrefs (for attachBaseContext) and recreate
+            // Only recreate when user ACTIVELY changes language (not on initial load)
+            // Compare DataStore language vs SharedPrefs language (which survives recreate)
             LaunchedEffect(preferences.language) {
+                if (preferences.language.isBlank()) return@LaunchedEffect
                 val prefs = getSharedPreferences("language_prefs", Context.MODE_PRIVATE)
-                val savedLang = prefs.getString("app_language", "en")
-                if (currentLanguage == null) {
-                    currentLanguage = preferences.language
-                } else if (preferences.language != currentLanguage) {
+                val appliedLang = prefs.getString("app_language", "en") ?: "en"
+                
+                if (preferences.language != appliedLang) {
+                    // User changed language in settings — save and recreate ONCE
                     prefs.edit().putString("app_language", preferences.language).apply()
-                    currentLanguage = preferences.language
                     recreate()
-                    return@LaunchedEffect
-                }
-                // Also save on first load in case it wasn't saved yet
-                if (savedLang != preferences.language) {
-                    prefs.edit().putString("app_language", preferences.language).apply()
                 }
             }
 

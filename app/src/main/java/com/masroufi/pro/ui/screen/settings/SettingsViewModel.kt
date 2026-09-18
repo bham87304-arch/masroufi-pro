@@ -3,6 +3,7 @@ package com.masroufi.pro.ui.screen.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masroufi.pro.data.preferences.UserPreferencesManager
+import com.masroufi.pro.notification.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +26,8 @@ data class SettingsUiState(
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userPreferencesManager: UserPreferencesManager
+    private val userPreferencesManager: UserPreferencesManager,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -71,49 +73,34 @@ class SettingsViewModel @Inject constructor(
     fun toggleReminder(enabled: Boolean) {
         viewModelScope.launch {
             userPreferencesManager.setReminderEnabled(enabled)
+            if (enabled) {
+                reminderScheduler.scheduleReminder(_uiState.value.reminderTime)
+            } else {
+                reminderScheduler.cancelReminder()
+            }
         }
     }
 
     fun setReminderTime(time: String) {
         viewModelScope.launch {
             userPreferencesManager.setReminderTime(time)
+            _uiState.update { it.copy(reminderTime = time) }
+            if (_uiState.value.isReminderEnabled) {
+                reminderScheduler.scheduleReminder(time)
+            }
         }
     }
 
     fun clearData() {
-        // Not implemented yet
         hideClearDataDialog()
     }
 
-    fun showCurrencyDialog() {
-        _uiState.update { it.copy(showCurrencyDialog = true) }
-    }
-
-    fun hideCurrencyDialog() {
-        _uiState.update { it.copy(showCurrencyDialog = false) }
-    }
-
-    fun showThemeDialog() {
-        _uiState.update { it.copy(showThemeDialog = true) }
-    }
-
-    fun hideThemeDialog() {
-        _uiState.update { it.copy(showThemeDialog = false) }
-    }
-
-    fun showLanguageDialog() {
-        _uiState.update { it.copy(showLanguageDialog = true) }
-    }
-
-    fun hideLanguageDialog() {
-        _uiState.update { it.copy(showLanguageDialog = false) }
-    }
-
-    fun showClearDataDialog() {
-        _uiState.update { it.copy(showClearDataDialog = true) }
-    }
-
-    fun hideClearDataDialog() {
-        _uiState.update { it.copy(showClearDataDialog = false) }
-    }
+    fun showCurrencyDialog() { _uiState.update { it.copy(showCurrencyDialog = true) } }
+    fun hideCurrencyDialog() { _uiState.update { it.copy(showCurrencyDialog = false) } }
+    fun showThemeDialog() { _uiState.update { it.copy(showThemeDialog = true) } }
+    fun hideThemeDialog() { _uiState.update { it.copy(showThemeDialog = false) } }
+    fun showLanguageDialog() { _uiState.update { it.copy(showLanguageDialog = true) } }
+    fun hideLanguageDialog() { _uiState.update { it.copy(showLanguageDialog = false) } }
+    fun showClearDataDialog() { _uiState.update { it.copy(showClearDataDialog = true) } }
+    fun hideClearDataDialog() { _uiState.update { it.copy(showClearDataDialog = false) } }
 }
