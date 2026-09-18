@@ -96,7 +96,7 @@ fun DashboardScreen(
                 transaction = tc.transaction,
                 category = tc.category,
                 onClick = {
-                    navController.navigate(Screen.AddTransaction.createRoute(tc.transaction.type))
+                    navController.navigate(Screen.EditTransaction.createRoute(tc.transaction.id))
                 },
                 onSwipeToDelete = { viewModel.deleteTransaction(tc.transaction.id) },
                 modifier = Modifier.padding(vertical = 4.dp)

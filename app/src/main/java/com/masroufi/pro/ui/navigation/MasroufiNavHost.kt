@@ -134,10 +134,9 @@ fun MasroufiNavHost() {
                 route = Screen.EditTransaction.route,
                 arguments = listOf(navArgument("transactionId") { type = NavType.StringType })
             ) {
-                // TODO: Edit transaction screen (reuse AddTransactionScreen with pre-filled data)
                 AddTransactionScreen(
                     navController = navController,
-                    transactionType = TransactionType.EXPENSE
+                    transactionType = TransactionType.EXPENSE // Will be overridden by loaded data
                 )
             }
 

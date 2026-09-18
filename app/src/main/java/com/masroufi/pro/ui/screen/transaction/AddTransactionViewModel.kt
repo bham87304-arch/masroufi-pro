@@ -31,6 +31,7 @@ data class AddTransactionUiState(
     val categories: List<CategoryEntity> = emptyList(),
     val accounts: List<AccountEntity> = emptyList(),
     val isEditing: Boolean = false,
+    val editingTransactionId: String? = null,
     val calculatorExpression: String = "",
     val isSaved: Boolean = false,
     val error: String? = null
@@ -50,17 +51,52 @@ class AddTransactionViewModel @Inject constructor(
 
     init {
         val typeStr = savedStateHandle.get<String>("type")
+        val transactionId = savedStateHandle.get<String>("transactionId")
+
         val type = typeStr?.let {
             try { TransactionType.valueOf(it) } catch (_: Exception) { TransactionType.EXPENSE }
         } ?: TransactionType.EXPENSE
 
         _uiState.value = _uiState.value.copy(type = type)
         loadData(type)
+
+        // If editing, load the existing transaction
+        if (transactionId != null) {
+            loadExistingTransaction(transactionId)
+        }
+    }
+
+    private fun loadExistingTransaction(transactionId: String) {
+        viewModelScope.launch {
+            val transaction = transactionRepo.getTransactionById(transactionId)
+            if (transaction != null) {
+                val category = categoryRepo.getCategoryById(transaction.categoryId)
+                val account = accountRepo.getAccountById(transaction.accountId)
+                val amountStr = if (transaction.amount == transaction.amount.toLong().toDouble()) {
+                    transaction.amount.toLong().toString()
+                } else {
+                    String.format("%.2f", transaction.amount)
+                }
+                _uiState.value = _uiState.value.copy(
+                    type = transaction.type,
+                    calculatorExpression = amountStr,
+                    amount = amountStr,
+                    note = transaction.note ?: "",
+                    selectedDate = transaction.date,
+                    selectedCategory = category,
+                    selectedAccount = account,
+                    selectedCurrency = transaction.currency,
+                    isEditing = true,
+                    editingTransactionId = transactionId
+                )
+                // Reload categories for correct type
+                loadData(transaction.type)
+            }
+        }
     }
 
     private fun loadData(type: TransactionType) {
         viewModelScope.launch {
-            // Load categories for this type
             categoryRepo.getCategoriesByType(type).collect { categories ->
                 _uiState.value = _uiState.value.copy(
                     categories = categories,
@@ -69,7 +105,6 @@ class AddTransactionViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            // Load accounts
             accountRepo.getAllAccounts().collect { accounts ->
                 _uiState.value = _uiState.value.copy(
                     accounts = accounts,
@@ -78,26 +113,23 @@ class AddTransactionViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            // Load default currency
             userPrefs.userPreferencesFlow.collect { prefs ->
-                _uiState.value = _uiState.value.copy(selectedCurrency = prefs.defaultCurrency)
+                if (!_uiState.value.isEditing) {
+                    _uiState.value = _uiState.value.copy(selectedCurrency = prefs.defaultCurrency)
+                }
             }
         }
     }
 
-    /** Append a digit or operator to the calculator expression */
     fun appendToExpression(input: String) {
         val current = _uiState.value.calculatorExpression
-        // Prevent double operators
         val operators = setOf("+", "-", "×", "÷")
         if (input in operators && current.isNotEmpty() && current.last().toString() in operators.map { 
             when(it) { "×" -> "×"; "÷" -> "÷"; else -> it }
         }) {
-            // Replace the last operator
             _uiState.value = _uiState.value.copy(calculatorExpression = current.dropLast(1) + input)
             return
         }
-        // Prevent multiple dots in the same number
         if (input == ".") {
             val lastNumber = current.split(Regex("[+\\-×÷]")).lastOrNull() ?: ""
             if ("." in lastNumber) return
@@ -105,7 +137,6 @@ class AddTransactionViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(calculatorExpression = current + input)
     }
 
-    /** Delete the last character from the expression */
     fun backspace() {
         val current = _uiState.value.calculatorExpression
         if (current.isNotEmpty()) {
@@ -133,7 +164,6 @@ class AddTransactionViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedCurrency = currency)
     }
 
-    /** Evaluate the mathematical expression in the calculator */
     fun evaluateExpression() {
         val expr = _uiState.value.calculatorExpression
         if (expr.isEmpty()) return
@@ -154,11 +184,9 @@ class AddTransactionViewModel @Inject constructor(
         }
     }
 
-    /** Save the transaction to the database */
     fun saveTransaction() {
         val state = _uiState.value
 
-        // Evaluate expression first if needed
         val amountStr = state.calculatorExpression
         val amount = amountStr.toDoubleOrNull()
 
@@ -173,32 +201,43 @@ class AddTransactionViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val transaction = TransactionEntity(
-                id = UUID.randomUUID().toString(),
-                type = state.type,
-                amount = amount,
-                currency = state.selectedCurrency,
-                categoryId = state.selectedCategory.id,
-                accountId = state.selectedAccount?.id ?: "",
-                note = state.note.takeIf { it.isNotBlank() },
-                date = state.selectedDate,
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis()
-            )
-            transactionRepo.insertTransaction(transaction)
+            if (state.isEditing && state.editingTransactionId != null) {
+                // Update existing transaction
+                val updated = TransactionEntity(
+                    id = state.editingTransactionId,
+                    type = state.type,
+                    amount = amount,
+                    currency = state.selectedCurrency,
+                    categoryId = state.selectedCategory.id,
+                    accountId = state.selectedAccount?.id ?: "",
+                    note = state.note.takeIf { it.isNotBlank() },
+                    date = state.selectedDate,
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = System.currentTimeMillis()
+                )
+                transactionRepo.updateTransaction(updated)
+            } else {
+                // Create new transaction
+                val transaction = TransactionEntity(
+                    id = UUID.randomUUID().toString(),
+                    type = state.type,
+                    amount = amount,
+                    currency = state.selectedCurrency,
+                    categoryId = state.selectedCategory.id,
+                    accountId = state.selectedAccount?.id ?: "",
+                    note = state.note.takeIf { it.isNotBlank() },
+                    date = state.selectedDate,
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = System.currentTimeMillis()
+                )
+                transactionRepo.insertTransaction(transaction)
+            }
             _uiState.value = _uiState.value.copy(isSaved = true)
         }
     }
 
-    /**
-     * Simple math expression evaluator supporting +, -, ×, ÷
-     * Processes multiplication/division first (operator precedence), then addition/subtraction.
-     */
     private fun evaluateMathExpression(expression: String): Double {
-        // Replace display operators with standard ones
         val normalized = expression.replace("×", "*").replace("÷", "/")
-
-        // Tokenize: split into numbers and operators
         val tokens = mutableListOf<String>()
         var currentNumber = StringBuilder()
 
@@ -220,7 +259,6 @@ class AddTransactionViewModel @Inject constructor(
 
         if (tokens.isEmpty()) return 0.0
 
-        // First pass: handle * and /
         val reduced = mutableListOf<String>()
         var i = 0
         while (i < tokens.size) {
@@ -236,7 +274,6 @@ class AddTransactionViewModel @Inject constructor(
             }
         }
 
-        // Second pass: handle + and -
         var result = reduced[0].toDouble()
         var j = 1
         while (j < reduced.size) {

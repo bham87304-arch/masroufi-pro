@@ -107,4 +107,6 @@
     <string name="no_reminders">Aucun rappel. Appuyez sur + pour en ajouter un.</string>
     <string name="reminder_title">Titre (facultatif)</string>
     <string name="add">Ajouter</string>
+    <string name="edit">Modifier</string>
+    <string name="delete">Supprimer</string>
 </resources>

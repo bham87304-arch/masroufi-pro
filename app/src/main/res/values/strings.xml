@@ -107,4 +107,6 @@
     <string name="no_reminders">No reminders yet. Tap + to add one.</string>
     <string name="reminder_title">Title (optional)</string>
     <string name="add">Add</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>

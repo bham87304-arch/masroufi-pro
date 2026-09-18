@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.masroufi.pro.R
 import com.masroufi.pro.ui.components.TransactionCard
+import com.masroufi.pro.ui.navigation.Screen
 
 @Composable
 fun HistoryScreen(
@@ -44,7 +45,9 @@ fun HistoryScreen(
                     TransactionCard(
                         transaction = tc.transaction,
                         category = tc.category,
-                        onClick = {},
+                        onClick = {
+                            navController.navigate(Screen.EditTransaction.createRoute(tc.transaction.id))
+                        },
                         onSwipeToDelete = { viewModel.deleteTransaction(tc.transaction.id) },
                         modifier = Modifier.padding(vertical = 4.dp)
                     )

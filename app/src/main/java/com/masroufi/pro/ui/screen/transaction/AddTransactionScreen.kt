@@ -52,8 +52,15 @@ fun AddTransactionScreen(
     viewModel: AddTransactionViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-    val accentColor = if (transactionType == TransactionType.INCOME) Color(0xFF2E7D32) else Color(0xFFC62828)
-    val titleText = if (transactionType == TransactionType.INCOME) stringResource(R.string.new_income) else stringResource(R.string.new_expense)
+    val actualType = state.type
+    val accentColor = if (actualType == TransactionType.INCOME) Color(0xFF2E7D32) else Color(0xFFC62828)
+    val titleText = if (state.isEditing) {
+        stringResource(R.string.edit_transaction)
+    } else if (actualType == TransactionType.INCOME) {
+        stringResource(R.string.new_income)
+    } else {
+        stringResource(R.string.new_expense)
+    }
 
     // Date picker state
     var showDatePicker by remember { mutableStateOf(false) }
