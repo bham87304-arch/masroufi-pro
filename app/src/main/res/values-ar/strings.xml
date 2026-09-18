@@ -107,6 +107,4 @@
     <string name="no_reminders">لا توجد تذكيرات بعد. اضغط + لإضافة واحد.</string>
     <string name="reminder_title">العنوان (اختياري)</string>
     <string name="add">إضافة</string>
-    <string name="edit">تعديل</string>
-    <string name="delete">حذف</string>
 </resources>
