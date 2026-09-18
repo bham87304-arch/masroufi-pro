@@ -130,19 +130,19 @@ fun AccountsScreen(
     accountToDelete?.let { account ->
         AlertDialog(
             onDismissRequest = { accountToDelete = null },
-            title = { Text("Delete Account") },
-            text = { Text("Are you sure you want to delete ${account.name}?") },
+            title = { Text(stringResource(R.string.delete_account)) },
+            text = { Text(stringResource(R.string.confirm_delete)) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteAccount(account)
                     accountToDelete = null
                 }) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { accountToDelete = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -162,24 +162,23 @@ fun AccountDialog(
     
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (account == null) "Add Account" else "Edit Account") },
+        title = { Text(if (account == null) stringResource(R.string.add_account) else stringResource(R.string.edit_account)) },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Account Name") },
+                    label = { Text(stringResource(R.string.name)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = initialBalance,
                     onValueChange = { initialBalance = it },
-                    label = { Text("Initial Balance") },
+                    label = { Text(stringResource(R.string.initial_balance)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
                 )
-                // In a real app we'd add currency selector here
             }
         },
         confirmButton = {
@@ -198,18 +197,18 @@ fun AccountDialog(
                     }
                 }
             ) {
-                Text("Save")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
             Row {
                 if (account != null && !account.isDefault) {
                     TextButton(onClick = { onDelete(account) }) {
-                        Text("Delete", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                     }
                 }
                 TextButton(onClick = onDismiss) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         }

@@ -13,7 +13,7 @@ import javax.inject.Singleton
 data class UserPreferences(
     val defaultCurrency: String = "DZD",
     val themeMode: String = "system",
-    val language: String = "en",
+    val language: String = "auto",
     val isFirstLaunch: Boolean = true,
     val reminderEnabled: Boolean = false,
     val reminderTime: String = "20:00"
@@ -40,7 +40,7 @@ class UserPreferencesManager @Inject constructor(
         UserPreferences(
             defaultCurrency = preferences[DEFAULT_CURRENCY] ?: "DZD",
             themeMode = preferences[THEME_MODE] ?: "system",
-            language = preferences[LANGUAGE] ?: "en",
+            language = preferences[LANGUAGE] ?: "auto",
             isFirstLaunch = preferences[IS_FIRST_LAUNCH] ?: true,
             reminderEnabled = preferences[REMINDER_ENABLED] ?: false,
             reminderTime = preferences[REMINDER_TIME] ?: "20:00"

@@ -98,4 +98,8 @@
     <string name="loading">Loading...</string>
     <string name="empty">Empty</string>
     <string name="confirm">Confirm</string>
+    <string name="this_month">This Month</string>
+    <string name="last_month">Last Month</string>
+    <string name="change_label">Change</string>
+    <string name="type_label">Type</string>
 </resources>

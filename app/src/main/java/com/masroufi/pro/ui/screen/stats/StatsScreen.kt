@@ -99,8 +99,13 @@ fun StatsScreen(
                 // Donut Chart
                 if (uiState.categoryBreakdown.isNotEmpty() && uiState.totalExpenses > 0) {
                     val slices = uiState.categoryBreakdown.map {
+                        val displayName = when (java.util.Locale.getDefault().language) {
+                            "ar" -> it.category.nameAr.ifEmpty { it.category.name }
+                            "fr" -> it.category.nameFr.ifEmpty { it.category.name }
+                            else -> it.category.name
+                        }
                         DonutSlice(
-                            label = it.category.name,
+                            label = displayName,
                             value = it.total.toFloat(),
                             color = Color(it.category.color)
                         )
@@ -161,12 +166,12 @@ fun StatsScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("This Month")
+                            Text(stringResource(R.string.this_month))
                             AmountText(amount = uiState.currentMonthExpenses, currency = "DZD", type = TransactionType.EXPENSE)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Last Month")
+                            Text(stringResource(R.string.last_month))
                             AmountText(amount = uiState.previousMonthExpenses, currency = "DZD", type = TransactionType.EXPENSE)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
@@ -176,7 +181,7 @@ fun StatsScreen(
                         val color = if (isIncrease) Color.Red else Color.Green
                         val text = if (isIncrease) "+${String.format("%.1f", uiState.comparisonData)}%" else "${String.format("%.1f", uiState.comparisonData)}%"
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Change")
+                            Text(stringResource(R.string.change_label))
                             Text(text, color = color, fontWeight = FontWeight.Bold)
                         }
                     }
@@ -206,7 +211,12 @@ fun CategoryBreakdownItem(item: CategoryWithTotal, totalExpenses: Double) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(item.category.name, style = MaterialTheme.typography.bodyLarge)
+                val displayName = when (java.util.Locale.getDefault().language) {
+                    "ar" -> item.category.nameAr.ifEmpty { item.category.name }
+                    "fr" -> item.category.nameFr.ifEmpty { item.category.name }
+                    else -> item.category.name
+                }
+                Text(displayName, style = MaterialTheme.typography.bodyLarge)
                 AmountText(amount = item.total, currency = "DZD", type = TransactionType.EXPENSE)
             }
             Spacer(modifier = Modifier.height(4.dp))
@@ -245,7 +255,12 @@ fun TopCategoryItem(item: CategoryWithTotal) {
                 size = 32.dp
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(item.category.name)
+            val displayName = when (java.util.Locale.getDefault().language) {
+                "ar" -> item.category.nameAr.ifEmpty { item.category.name }
+                "fr" -> item.category.nameFr.ifEmpty { item.category.name }
+                else -> item.category.name
+            }
+            Text(displayName)
         }
         AmountText(amount = item.total, currency = "DZD", type = TransactionType.EXPENSE)
     }

@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.masroufi.pro.R
 import com.masroufi.pro.data.local.entity.CategoryEntity
 import com.masroufi.pro.data.local.entity.TransactionEntity
 import java.text.SimpleDateFormat
@@ -49,7 +51,7 @@ fun TransactionCard(
                     .padding(end = 16.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.White)
+                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete), tint = Color.White)
             }
         },
         enableDismissFromStartToEnd = false,
@@ -73,7 +75,12 @@ fun TransactionCard(
                 Spacer(modifier = Modifier.width(16.dp))
                 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = category.name, style = MaterialTheme.typography.bodyLarge)
+                    val displayName = when (java.util.Locale.getDefault().language) {
+                        "ar" -> category.nameAr.ifEmpty { category.name }
+                        "fr" -> category.nameFr.ifEmpty { category.name }
+                        else -> category.name
+                    }
+                    Text(text = displayName, style = MaterialTheme.typography.bodyLarge)
                     if (!transaction.note.isNullOrBlank()) {
                         Text(
                             text = transaction.note,

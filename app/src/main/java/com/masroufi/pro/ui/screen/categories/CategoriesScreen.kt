@@ -168,19 +168,19 @@ fun CategoriesScreen(
     categoryToDelete?.let { category ->
         AlertDialog(
             onDismissRequest = { categoryToDelete = null },
-            title = { Text("Delete Category") },
-            text = { Text("Are you sure you want to delete ${category.name}?") },
+            title = { Text(stringResource(R.string.delete_category)) },
+            text = { Text(stringResource(R.string.confirm_delete)) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteCategory(category)
                     categoryToDelete = null
                 }) {
-                    Text("Delete")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { categoryToDelete = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -208,27 +208,27 @@ fun CategoryDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Name") },
+                    label = { Text(stringResource(R.string.name)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Type", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.type_label), style = MaterialTheme.typography.labelMedium)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                     FilterChip(
                         selected = type == TransactionType.EXPENSE,
                         onClick = { type = TransactionType.EXPENSE },
-                        label = { Text("Expense") }
+                        label = { Text(stringResource(R.string.filter_expense)) }
                     )
                     FilterChip(
                         selected = type == TransactionType.INCOME,
                         onClick = { type = TransactionType.INCOME },
-                        label = { Text("Income") }
+                        label = { Text(stringResource(R.string.filter_income)) }
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Icon", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.icon), style = MaterialTheme.typography.labelMedium)
                 val chunkedIcons = PredefinedIcons.chunked(6)
                 Column(
                     modifier = Modifier.fillMaxWidth()
@@ -261,7 +261,7 @@ fun CategoryDialog(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Color", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.color), style = MaterialTheme.typography.labelMedium)
                 val chunkedColors = PredefinedColors.chunked(6)
                 Column(
                     modifier = Modifier.fillMaxWidth()
@@ -315,12 +315,12 @@ fun CategoryDialog(
                     }
                 }
             ) {
-                Text("Save")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )

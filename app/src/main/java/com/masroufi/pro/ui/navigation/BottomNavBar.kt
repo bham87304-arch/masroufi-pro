@@ -14,13 +14,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
+import androidx.compose.ui.res.stringResource
+import com.masroufi.pro.R
+
 @Composable
 fun MasroufiBottomNavBar(navController: NavController) {
     val items = listOf(
-        BottomNavItem(Screen.Dashboard.route, "Home", Icons.Default.Home),
-        BottomNavItem(Screen.History.route, "History", Icons.Default.FormatListBulleted),
-        BottomNavItem(Screen.Stats.route, "Stats", Icons.Default.BarChart),
-        BottomNavItem(Screen.Settings.route, "Settings", Icons.Default.Settings)
+        BottomNavItem(Screen.Dashboard.route, R.string.dashboard, Icons.Default.Home),
+        BottomNavItem(Screen.History.route, R.string.history, Icons.Default.FormatListBulleted),
+        BottomNavItem(Screen.Stats.route, R.string.statistics, Icons.Default.BarChart),
+        BottomNavItem(Screen.Settings.route, R.string.settings, Icons.Default.Settings)
     )
     
     val backStackEntry = navController.currentBackStackEntryAsState()
@@ -31,8 +34,8 @@ fun MasroufiBottomNavBar(navController: NavController) {
         NavigationBar {
             items.forEach { item ->
                 NavigationBarItem(
-                    icon = { Icon(item.icon, contentDescription = item.label) },
-                    label = { Text(item.label) },
+                    icon = { Icon(item.icon, contentDescription = stringResource(item.labelResId)) },
+                    label = { Text(stringResource(item.labelResId)) },
                     selected = currentRoute == item.route,
                     onClick = {
                         navController.navigate(item.route) {
@@ -47,4 +50,4 @@ fun MasroufiBottomNavBar(navController: NavController) {
     }
 }
 
-data class BottomNavItem(val route: String, val label: String, val icon: ImageVector)
+data class BottomNavItem(val route: String, val labelResId: Int, val icon: ImageVector)

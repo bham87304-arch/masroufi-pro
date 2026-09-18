@@ -19,6 +19,20 @@ class ReminderReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent?) {
+        // Apply app locale for correct notification language
+        val prefs = context.getSharedPreferences("language_prefs", Context.MODE_PRIVATE)
+        val savedLang = prefs.getString("app_language", "auto") ?: "auto"
+        val lang = if (savedLang == "auto") {
+            val deviceLang = java.util.Locale.getDefault().language
+            if (deviceLang in listOf("en", "ar", "fr")) deviceLang else "en"
+        } else {
+            savedLang
+        }
+        val locale = java.util.Locale(lang)
+        val config = android.content.res.Configuration(context.resources.configuration)
+        config.setLocale(locale)
+        val localizedContext = context.createConfigurationContext(config)
+        
         createNotificationChannel(context)
 
         val tapIntent = Intent(context, MainActivity::class.java).apply {
@@ -31,8 +45,8 @@ class ReminderReceiver : BroadcastReceiver() {
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(context.getString(R.string.app_name))
-            .setContentText(context.getString(R.string.daily_reminder_message))
+            .setContentTitle(localizedContext.getString(R.string.app_name))
+            .setContentText(localizedContext.getString(R.string.daily_reminder_message))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)

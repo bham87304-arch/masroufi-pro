@@ -98,4 +98,8 @@
     <string name="loading">جاري التحميل...</string>
     <string name="empty">فارغ</string>
     <string name="confirm">تأكيد</string>
+    <string name="this_month">هذا الشهر</string>
+    <string name="last_month">الشهر الماضي</string>
+    <string name="change_label">التغيير</string>
+    <string name="type_label">النوع</string>
 </resources>

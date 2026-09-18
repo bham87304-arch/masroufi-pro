@@ -98,4 +98,8 @@
     <string name="loading">Chargement...</string>
     <string name="empty">Vide</string>
     <string name="confirm">Confirmer</string>
+    <string name="this_month">Ce mois</string>
+    <string name="last_month">Mois précédent</string>
+    <string name="change_label">Variation</string>
+    <string name="type_label">Type</string>
 </resources>

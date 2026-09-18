@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.masroufi.pro.R
 import com.masroufi.pro.data.model.TransactionType
 import com.masroufi.pro.ui.components.CategoryIcon
 import java.text.SimpleDateFormat
@@ -48,7 +50,7 @@ fun AddTransactionScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val accentColor = if (transactionType == TransactionType.INCOME) Color(0xFF2E7D32) else Color(0xFFC62828)
-    val titleText = if (transactionType == TransactionType.INCOME) "New Income" else "New Expense"
+    val titleText = if (transactionType == TransactionType.INCOME) stringResource(R.string.new_income) else stringResource(R.string.new_expense)
 
     // Date picker state
     var showDatePicker by remember { mutableStateOf(false) }
@@ -67,10 +69,10 @@ fun AddTransactionScreen(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { viewModel.setDate(it) }
                     showDatePicker = false
-                }) { Text("OK") }
+                }) { Text(stringResource(R.string.ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.cancel)) }
             }
         ) {
             DatePicker(state = datePickerState)
@@ -89,7 +91,7 @@ fun AddTransactionScreen(
                 actions = {
                     // Save button in top bar
                     IconButton(onClick = { viewModel.saveTransaction() }) {
-                        Icon(Icons.Default.Check, contentDescription = "Save")
+                        Icon(Icons.Default.Check, contentDescription = stringResource(R.string.save))
                     }
                 }
             )
@@ -168,7 +170,7 @@ fun AddTransactionScreen(
             OutlinedTextField(
                 value = state.note,
                 onValueChange = { viewModel.setNote(it) },
-                label = { Text("Note") },
+                label = { Text(stringResource(R.string.note)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp),
@@ -177,7 +179,7 @@ fun AddTransactionScreen(
 
             // Category selector
             Text(
-                text = "Category",
+                text = stringResource(R.string.choose_category),
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 4.dp)
             )
@@ -211,8 +213,13 @@ fun AddTransactionScreen(
                             size = 36.dp
                         )
                         Spacer(modifier = Modifier.height(4.dp))
+                        val displayName = when (java.util.Locale.getDefault().language) {
+                            "ar" -> category.nameAr.ifEmpty { category.name }
+                            "fr" -> category.nameFr.ifEmpty { category.name }
+                            else -> category.name
+                        }
                         Text(
-                            text = category.name,
+                            text = displayName,
                             style = MaterialTheme.typography.labelSmall,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,

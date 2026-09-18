@@ -1,7 +1,9 @@
 package com.masroufi.pro.ui.screen.history
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.masroufi.pro.R
 import com.masroufi.pro.data.model.TransactionType
 import com.masroufi.pro.data.repository.CategoryRepository
 import com.masroufi.pro.data.repository.TransactionRepository
@@ -32,7 +34,8 @@ data class HistoryUiState(
 class HistoryViewModel @Inject constructor(
     private val transactionRepo: TransactionRepository,
     private val categoryRepo: CategoryRepository,
-    private val userPrefs: UserPreferencesManager
+    private val userPrefs: UserPreferencesManager,
+    private val application: Application
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -118,8 +121,8 @@ class HistoryViewModel @Inject constructor(
         val transYear = calendar.get(Calendar.YEAR)
         
         return when {
-            year == transYear && today == transDay -> "Today"
-            year == transYear && today - transDay == 1 -> "Yesterday"
+            year == transYear && today == transDay -> application.getString(R.string.today)
+            year == transYear && today - transDay == 1 -> application.getString(R.string.yesterday)
             else -> {
                 val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
                 sdf.format(Date(timestamp))

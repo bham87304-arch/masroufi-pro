@@ -8,9 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.masroufi.pro.R
 import com.masroufi.pro.ui.components.TransactionCard
 
 @Composable
@@ -22,9 +24,9 @@ fun HistoryScreen(
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(selected = state.filterType == "ALL", onClick = { viewModel.setFilterType("ALL") }, label = { Text("All") })
-            FilterChip(selected = state.filterType == "INCOME", onClick = { viewModel.setFilterType("INCOME") }, label = { Text("Income") })
-            FilterChip(selected = state.filterType == "EXPENSE", onClick = { viewModel.setFilterType("EXPENSE") }, label = { Text("Expense") })
+            FilterChip(selected = state.filterType == "ALL", onClick = { viewModel.setFilterType("ALL") }, label = { Text(stringResource(R.string.filter_all)) })
+            FilterChip(selected = state.filterType == "INCOME", onClick = { viewModel.setFilterType("INCOME") }, label = { Text(stringResource(R.string.filter_income)) })
+            FilterChip(selected = state.filterType == "EXPENSE", onClick = { viewModel.setFilterType("EXPENSE") }, label = { Text(stringResource(R.string.filter_expense)) })
         }
 
         Spacer(modifier = Modifier.height(16.dp))

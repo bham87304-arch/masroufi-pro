@@ -93,6 +93,7 @@ fun SettingsScreen(
                     headlineContent = { Text(stringResource(R.string.language)) },
                     supportingContent = {
                         val langText = when(uiState.language) {
+                            "auto" -> "Device Default"
                             "ar" -> "العربية"
                             "fr" -> "Français"
                             else -> "English"
@@ -227,6 +228,7 @@ fun SettingsScreen(
                 text = {
                     Column {
                         val languages = listOf(
+                            "auto" to "Device Default",
                             "en" to "English",
                             "ar" to "العربية",
                             "fr" to "Français"

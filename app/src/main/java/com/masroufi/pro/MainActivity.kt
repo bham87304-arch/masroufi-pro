@@ -1,6 +1,7 @@
 package com.masroufi.pro
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -34,8 +35,17 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { /* result handled */ }
 
+    override fun attachBaseContext(newBase: Context) {
+        val localizedContext = applyLocale(newBase)
+        super.attachBaseContext(localizedContext)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Also apply locale to resources directly (belt + suspenders)
+        applyLocaleToResources()
+
         enableEdgeToEdge()
         requestNotificationPermissionIfNeeded()
 
@@ -57,15 +67,36 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun attachBaseContext(newBase: android.content.Context) {
-        // Apply saved language to the activity context
-        val prefs = newBase.getSharedPreferences("language_prefs", MODE_PRIVATE)
-        val lang = prefs.getString("app_language", "en") ?: "en"
+    private fun getAppLanguage(context: Context): String {
+        val prefs = context.getSharedPreferences("language_prefs", MODE_PRIVATE)
+        val savedLang = prefs.getString("app_language", "auto") ?: "auto"
+        return if (savedLang == "auto") {
+            val deviceLang = Locale.getDefault().language
+            if (deviceLang in listOf("en", "ar", "fr")) deviceLang else "en"
+        } else {
+            savedLang
+        }
+    }
+
+    private fun applyLocale(context: Context): Context {
+        val lang = getAppLanguage(context)
         val locale = Locale(lang)
         Locale.setDefault(locale)
-        val config = Configuration(newBase.resources.configuration)
+        val config = Configuration(context.resources.configuration)
         config.setLocale(locale)
-        super.attachBaseContext(newBase.createConfigurationContext(config))
+        config.setLayoutDirection(locale)
+        return context.createConfigurationContext(config)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun applyLocaleToResources() {
+        val lang = getAppLanguage(this)
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        val config = Configuration(resources.configuration)
+        config.setLocale(locale)
+        config.setLayoutDirection(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 
     private fun requestNotificationPermissionIfNeeded() {
