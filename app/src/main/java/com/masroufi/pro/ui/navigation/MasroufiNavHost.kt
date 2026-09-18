@@ -40,6 +40,7 @@ import com.masroufi.pro.ui.screen.auth.AuthScreen
 import com.masroufi.pro.ui.screen.categories.CategoriesScreen
 import com.masroufi.pro.ui.screen.dashboard.DashboardScreen
 import com.masroufi.pro.ui.screen.history.HistoryScreen
+import com.masroufi.pro.ui.screen.reminders.RemindersScreen
 import com.masroufi.pro.ui.screen.settings.SettingsScreen
 import com.masroufi.pro.ui.screen.stats.StatsScreen
 import com.masroufi.pro.ui.screen.transaction.AddTransactionScreen
@@ -143,6 +144,7 @@ fun MasroufiNavHost() {
             // Secondary screens
             composable(Screen.Categories.route) { CategoriesScreen() }
             composable(Screen.Accounts.route) { AccountsScreen() }
+            composable(Screen.Reminders.route) { RemindersScreen(navController = navController) }
             composable(Screen.Auth.route) { AuthScreen() }
         }
     }

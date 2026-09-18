@@ -12,19 +12,19 @@ class ReminderScheduler(
     private val context: Context
 ) {
     companion object {
-        private const val REQUEST_CODE = 2001
         private const val TAG = "ReminderScheduler"
+        private const val BASE_REQUEST_CODE = 2000
     }
 
-    fun scheduleReminder(time: String) {
-        val parts = time.split(":")
-        val hour = parts.getOrNull(0)?.toIntOrNull() ?: 20
-        val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
-
+    fun scheduleReminder(reminderId: String, hour: Int, minute: Int, title: String) {
+        val requestCode = reminderId.hashCode().and(0x7FFFFFFF) // Positive int from ID
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, ReminderReceiver::class.java)
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
+            putExtra("reminder_id", reminderId)
+            putExtra("reminder_title", title)
+        }
         val pendingIntent = PendingIntent.getBroadcast(
-            context, REQUEST_CODE, intent,
+            context, requestCode, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -40,42 +40,34 @@ class ReminderScheduler(
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                // Android 12+ - check if we can schedule exact alarms
                 if (alarmManager.canScheduleExactAlarms()) {
-                    alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP,
-                        calendar.timeInMillis,
+                    alarmManager.setAlarmClock(
+                        AlarmManager.AlarmClockInfo(calendar.timeInMillis, pendingIntent),
                         pendingIntent
                     )
-                    Log.d(TAG, "Scheduled exact alarm at ${calendar.time}")
+                    Log.d(TAG, "Scheduled alarm clock for $hour:$minute (id=$reminderId)")
                 } else {
-                    // Fall back to inexact but still allow while idle
                     alarmManager.setAndAllowWhileIdle(
                         AlarmManager.RTC_WAKEUP,
                         calendar.timeInMillis,
                         pendingIntent
                     )
-                    Log.d(TAG, "Scheduled inexact alarm at ${calendar.time} (no exact alarm permission)")
+                    Log.d(TAG, "Scheduled inexact alarm for $hour:$minute (no exact permission)")
                 }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // Android 6-11 - use setExactAndAllowWhileIdle
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis,
+                alarmManager.setAlarmClock(
+                    AlarmManager.AlarmClockInfo(calendar.timeInMillis, pendingIntent),
                     pendingIntent
                 )
-                Log.d(TAG, "Scheduled exact alarm at ${calendar.time}")
+                Log.d(TAG, "Scheduled alarm clock for $hour:$minute")
             } else {
-                // Android 5 and below
                 alarmManager.setExact(
                     AlarmManager.RTC_WAKEUP,
                     calendar.timeInMillis,
                     pendingIntent
                 )
-                Log.d(TAG, "Scheduled alarm at ${calendar.time}")
             }
         } catch (e: SecurityException) {
-            // Fallback if exact alarm permission denied
             alarmManager.set(
                 AlarmManager.RTC_WAKEUP,
                 calendar.timeInMillis,
@@ -85,14 +77,27 @@ class ReminderScheduler(
         }
     }
 
-    fun cancelReminder() {
+    // Legacy single-reminder support (for MasroufiApplication startup)
+    fun scheduleReminder(time: String) {
+        val parts = time.split(":")
+        val hour = parts.getOrNull(0)?.toIntOrNull() ?: 20
+        val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        scheduleReminder("legacy_reminder", hour, minute, "")
+    }
+
+    fun cancelReminder(reminderId: String) {
+        val requestCode = reminderId.hashCode().and(0x7FFFFFFF)
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, ReminderReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
-            context, REQUEST_CODE, intent,
+            context, requestCode, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(pendingIntent)
-        Log.d(TAG, "Cancelled reminder alarm")
+        Log.d(TAG, "Cancelled reminder $reminderId")
+    }
+
+    fun cancelReminder() {
+        cancelReminder("legacy_reminder")
     }
 }

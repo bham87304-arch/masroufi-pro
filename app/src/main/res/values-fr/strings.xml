@@ -102,4 +102,9 @@
     <string name="last_month">Mois précédent</string>
     <string name="change_label">Variation</string>
     <string name="type_label">Type</string>
+    <string name="reminders">Rappels</string>
+    <string name="add_reminder">Ajouter un rappel</string>
+    <string name="no_reminders">Aucun rappel. Appuyez sur + pour en ajouter un.</string>
+    <string name="reminder_title">Titre (facultatif)</string>
+    <string name="add">Ajouter</string>
 </resources>

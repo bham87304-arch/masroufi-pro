@@ -1,15 +1,13 @@
 package com.masroufi.pro
 
 import android.app.Application
-import android.content.Context
+import com.masroufi.pro.data.local.dao.ReminderDao
 import com.masroufi.pro.data.local.database.DatabaseSeeder
-import com.masroufi.pro.data.preferences.UserPreferencesManager
 import com.masroufi.pro.notification.ReminderScheduler
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,10 +18,10 @@ class MasroufiApplication : Application() {
     lateinit var databaseSeeder: DatabaseSeeder
 
     @Inject
-    lateinit var userPreferencesManager: UserPreferencesManager
+    lateinit var reminderScheduler: ReminderScheduler
 
     @Inject
-    lateinit var reminderScheduler: ReminderScheduler
+    lateinit var reminderDao: ReminderDao
     
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     
@@ -33,20 +31,23 @@ class MasroufiApplication : Application() {
             databaseSeeder.seedDefaultCategories()
             databaseSeeder.seedDefaultAccount()
             
-            // Re-schedule reminder on every app launch (alarms are lost on reinstall/reboot)
+            // Re-schedule all enabled reminders on every app launch
+            // (alarms are lost on reinstall/reboot)
             try {
-                val prefs = userPreferencesManager.userPreferencesFlow.first()
-                if (prefs.reminderEnabled) {
-                    reminderScheduler.scheduleReminder(prefs.reminderTime)
-                    // Sync to SharedPrefs so BroadcastReceiver can read for rescheduling
-                    getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
+                val enabledReminders = reminderDao.getEnabledReminders()
+                enabledReminders.forEach { reminder ->
+                    reminderScheduler.scheduleReminder(
+                        reminder.id, reminder.hour, reminder.minute, reminder.title
+                    )
+                    // Save time to SharedPrefs for receiver rescheduling
+                    val timeStr = String.format("%02d:%02d", reminder.hour, reminder.minute)
+                    getSharedPreferences("reminder_prefs", MODE_PRIVATE)
                         .edit()
-                        .putBoolean("reminder_enabled", true)
-                        .putString("reminder_time", prefs.reminderTime)
+                        .putString("time_${reminder.id}", timeStr)
                         .apply()
                 }
             } catch (_: Exception) {
-                // Ignore if preferences not yet available
+                // Ignore if database not yet available
             }
         }
     }

@@ -31,7 +31,7 @@ fun TransactionCard(
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
-            if (it == SwipeToDismissBoxValue.EndToStart) {
+            if (it == SwipeToDismissBoxValue.EndToStart || it == SwipeToDismissBoxValue.StartToEnd) {
                 onSwipeToDelete()
                 true
             } else {
@@ -48,13 +48,14 @@ fun TransactionCard(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(color)
-                    .padding(end = 16.dp),
+                    .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete), tint = Color.White)
             }
         },
-        enableDismissFromStartToEnd = false,
+        enableDismissFromStartToEnd = true,
+        enableDismissFromEndToStart = true,
         modifier = modifier
     ) {
         Card(

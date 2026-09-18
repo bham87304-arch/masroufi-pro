@@ -102,4 +102,9 @@
     <string name="last_month">الشهر الماضي</string>
     <string name="change_label">التغيير</string>
     <string name="type_label">النوع</string>
+    <string name="reminders">التذكيرات</string>
+    <string name="add_reminder">إضافة تذكير</string>
+    <string name="no_reminders">لا توجد تذكيرات بعد. اضغط + لإضافة واحد.</string>
+    <string name="reminder_title">العنوان (اختياري)</string>
+    <string name="add">إضافة</string>
 </resources>

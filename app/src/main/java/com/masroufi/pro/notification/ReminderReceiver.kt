@@ -16,14 +16,16 @@ class ReminderReceiver : BroadcastReceiver() {
 
     companion object {
         const val CHANNEL_ID = "masroufi_reminder"
-        const val NOTIFICATION_ID = 1001
         private const val TAG = "ReminderReceiver"
     }
 
     override fun onReceive(context: Context, intent: Intent?) {
         Log.d(TAG, "onReceive triggered!")
+        
+        val reminderId = intent?.getStringExtra("reminder_id") ?: "legacy"
+        val reminderTitle = intent?.getStringExtra("reminder_title") ?: ""
 
-        // Apply app locale for correct notification language
+        // Apply app locale
         val prefs = context.getSharedPreferences("language_prefs", Context.MODE_PRIVATE)
         val savedLang = prefs.getString("app_language", "auto") ?: "auto"
         val lang = if (savedLang == "auto") {
@@ -47,41 +49,44 @@ class ReminderReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val contentText = if (reminderTitle.isNotBlank()) {
+            reminderTitle
+        } else {
+            localizedContext.getString(R.string.daily_reminder_message)
+        }
+
+        val notificationId = reminderId.hashCode().and(0x7FFFFFFF)
+
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(localizedContext.getString(R.string.app_name))
-            .setContentText(localizedContext.getString(R.string.daily_reminder_message))
+            .setContentText(contentText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .build()
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFICATION_ID, notification)
-        Log.d(TAG, "Notification displayed!")
+        notificationManager.notify(notificationId, notification)
+        Log.d(TAG, "Notification displayed for reminder: $reminderId")
 
-        // Re-schedule for tomorrow (since we use one-shot exact alarms, not repeating)
-        rescheduleForTomorrow(context)
+        // Re-schedule for tomorrow
+        rescheduleForTomorrow(context, reminderId, reminderTitle)
     }
 
-    private fun rescheduleForTomorrow(context: Context) {
+    private fun rescheduleForTomorrow(context: Context, reminderId: String, title: String) {
         try {
-            val reminderPrefs = context.getSharedPreferences(
-                "reminder_prefs", Context.MODE_PRIVATE
-            )
-            val time = reminderPrefs.getString("reminder_time", "20:00") ?: "20:00"
-            val enabled = reminderPrefs.getBoolean("reminder_enabled", false)
-
-            if (enabled) {
-                val scheduler = ReminderScheduler(context)
-                scheduler.scheduleReminder(time)
-                Log.d(TAG, "Re-scheduled reminder for tomorrow at $time")
-            }
-        } catch (e: Exception) {
-            // Fallback: just reschedule at the same time
-            Log.w(TAG, "Failed to read preferences, rescheduling at default time: ${e.message}")
+            val reminderPrefs = context.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
+            val time = reminderPrefs.getString("time_$reminderId", "20:00") ?: "20:00"
+            val parts = time.split(":")
+            val hour = parts.getOrNull(0)?.toIntOrNull() ?: 20
+            val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+            
             val scheduler = ReminderScheduler(context)
-            scheduler.scheduleReminder("20:00")
+            scheduler.scheduleReminder(reminderId, hour, minute, title)
+            Log.d(TAG, "Re-scheduled reminder $reminderId for tomorrow at $time")
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to reschedule: ${e.message}")
         }
     }
 

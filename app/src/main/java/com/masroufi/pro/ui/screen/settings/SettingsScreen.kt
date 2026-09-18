@@ -114,35 +114,11 @@ fun SettingsScreen(
             }
             item {
                 ListItem(
-                    headlineContent = { Text(stringResource(R.string.daily_reminder)) },
+                    headlineContent = { Text(stringResource(R.string.reminders)) },
+                    supportingContent = { Text(stringResource(R.string.daily_reminder)) },
                     leadingContent = { Icon(Icons.Default.Notifications, contentDescription = null) },
-                    trailingContent = {
-                        Switch(
-                            checked = uiState.isReminderEnabled,
-                            onCheckedChange = { viewModel.toggleReminder(it) }
-                        )
-                    }
+                    modifier = Modifier.clickable { navController.navigate(Screen.Reminders.route) }
                 )
-            }
-            if (uiState.isReminderEnabled) {
-                item {
-                    val context = LocalContext.current
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.reminder_time)) },
-                        supportingContent = { Text(uiState.reminderTime) },
-                        leadingContent = { Icon(Icons.Default.Schedule, contentDescription = null) },
-                        modifier = Modifier.clickable {
-                            val parts = uiState.reminderTime.split(":")
-                            val hour = parts.getOrNull(0)?.toIntOrNull() ?: 20
-                            val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
-                            android.app.TimePickerDialog(
-                                context,
-                                { _, h, m -> viewModel.setReminderTime(String.format("%02d:%02d", h, m)) },
-                                hour, minute, true
-                            ).show()
-                        }
-                    )
-                }
             }
             
             item { HorizontalDivider() }

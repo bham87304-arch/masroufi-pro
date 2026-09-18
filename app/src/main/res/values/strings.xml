@@ -102,4 +102,9 @@
     <string name="last_month">Last Month</string>
     <string name="change_label">Change</string>
     <string name="type_label">Type</string>
+    <string name="reminders">Reminders</string>
+    <string name="add_reminder">Add Reminder</string>
+    <string name="no_reminders">No reminders yet. Tap + to add one.</string>
+    <string name="reminder_title">Title (optional)</string>
+    <string name="add">Add</string>
 </resources>
