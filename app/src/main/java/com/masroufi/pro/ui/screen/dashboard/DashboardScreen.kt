@@ -20,6 +20,7 @@ import com.masroufi.pro.ui.components.AmountText
 import com.masroufi.pro.ui.components.DonutChart
 import com.masroufi.pro.ui.components.DonutSlice
 import com.masroufi.pro.ui.components.TransactionCard
+import com.masroufi.pro.ui.navigation.Screen
 
 @Composable
 fun DashboardScreen(
@@ -94,8 +95,10 @@ fun DashboardScreen(
             TransactionCard(
                 transaction = tc.transaction,
                 category = tc.category,
-                onClick = {},
-                onSwipeToDelete = {},
+                onClick = {
+                    navController.navigate(Screen.AddTransaction.createRoute(tc.transaction.type))
+                },
+                onSwipeToDelete = { viewModel.deleteTransaction(tc.transaction.id) },
                 modifier = Modifier.padding(vertical = 4.dp)
             )
         }

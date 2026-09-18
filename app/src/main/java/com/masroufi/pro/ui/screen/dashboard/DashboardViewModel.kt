@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import java.util.Calendar
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class CategoryWithTotal(val category: CategoryEntity, val total: Double, val percentage: Float)
@@ -157,5 +158,11 @@ class DashboardViewModel @Inject constructor(
         }
         
         return Pair(calendar.timeInMillis, end)
+    }
+
+    fun deleteTransaction(id: String) {
+        viewModelScope.launch {
+            transactionRepo.deleteTransaction(id)
+        }
     }
 }

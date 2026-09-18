@@ -1,12 +1,17 @@
 package com.masroufi.pro.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,7 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransactionCard(
     transaction: TransactionEntity,
@@ -29,42 +34,42 @@ fun TransactionCard(
     onSwipeToDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = {
-            if (it == SwipeToDismissBoxValue.EndToStart || it == SwipeToDismissBoxValue.StartToEnd) {
-                onSwipeToDelete()
-                true
-            } else {
-                false
-            }
-        }
-    )
+    var showMenu by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
-    SwipeToDismissBox(
-        state = dismissState,
-        backgroundContent = {
-            val color = MaterialTheme.colorScheme.error
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color)
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete), tint = Color.White)
+    // Confirmation dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text(stringResource(R.string.delete_transaction)) },
+            text = { Text(stringResource(R.string.confirm_delete)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDeleteDialog = false
+                    onSwipeToDelete()
+                }) {
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
             }
-        },
-        enableDismissFromStartToEnd = true,
-        enableDismissFromEndToStart = true,
+        )
+    }
+
+    Card(
         modifier = modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = { onClick() },
+                onLongClick = { showMenu = true }
+            ),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onClick() },
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
+        Box {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -72,11 +77,11 @@ fun TransactionCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CategoryIcon(iconName = category.icon, color = Color(category.color))
-                
+
                 Spacer(modifier = Modifier.width(16.dp))
-                
+
                 Column(modifier = Modifier.weight(1f)) {
-                    val displayName = when (java.util.Locale.getDefault().language) {
+                    val displayName = when (Locale.getDefault().language) {
                         "ar" -> category.nameAr.ifEmpty { category.name }
                         "fr" -> category.nameFr.ifEmpty { category.name }
                         else -> category.name
@@ -92,7 +97,7 @@ fun TransactionCard(
                         )
                     }
                 }
-                
+
                 Column(horizontalAlignment = Alignment.End) {
                     AmountText(
                         amount = transaction.amount,
@@ -106,6 +111,29 @@ fun TransactionCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+            }
+
+            // Dropdown menu on long press
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.edit)) },
+                    onClick = {
+                        showMenu = false
+                        onClick()
+                    },
+                    leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) }
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
+                    onClick = {
+                        showMenu = false
+                        showDeleteDialog = true
+                    },
+                    leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error) }
+                )
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.masroufi.pro
 
 import android.app.Application
+import android.content.Context
 import com.masroufi.pro.data.local.dao.ReminderDao
 import com.masroufi.pro.data.local.database.DatabaseSeeder
 import com.masroufi.pro.notification.ReminderScheduler
@@ -31,17 +32,19 @@ class MasroufiApplication : Application() {
             databaseSeeder.seedDefaultCategories()
             databaseSeeder.seedDefaultAccount()
             
-            // Re-schedule all enabled reminders on every app launch
-            // (alarms are lost on reinstall/reboot)
+            // Re-schedule all enabled reminders on app launch
+            // Cancel first to avoid duplicate alarms
             try {
                 val enabledReminders = reminderDao.getEnabledReminders()
                 enabledReminders.forEach { reminder ->
+                    // Cancel existing alarm first, then re-schedule
+                    reminderScheduler.cancelReminder(reminder.id)
                     reminderScheduler.scheduleReminder(
                         reminder.id, reminder.hour, reminder.minute, reminder.title
                     )
                     // Save time to SharedPrefs for receiver rescheduling
                     val timeStr = String.format("%02d:%02d", reminder.hour, reminder.minute)
-                    getSharedPreferences("reminder_prefs", MODE_PRIVATE)
+                    getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
                         .edit()
                         .putString("time_${reminder.id}", timeStr)
                         .apply()
