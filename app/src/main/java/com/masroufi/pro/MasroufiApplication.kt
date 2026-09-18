@@ -2,10 +2,13 @@ package com.masroufi.pro
 
 import android.app.Application
 import com.masroufi.pro.data.local.database.DatabaseSeeder
+import com.masroufi.pro.data.preferences.UserPreferencesManager
+import com.masroufi.pro.notification.ReminderScheduler
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,6 +17,12 @@ class MasroufiApplication : Application() {
     
     @Inject
     lateinit var databaseSeeder: DatabaseSeeder
+
+    @Inject
+    lateinit var userPreferencesManager: UserPreferencesManager
+
+    @Inject
+    lateinit var reminderScheduler: ReminderScheduler
     
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     
@@ -22,6 +31,16 @@ class MasroufiApplication : Application() {
         applicationScope.launch {
             databaseSeeder.seedDefaultCategories()
             databaseSeeder.seedDefaultAccount()
+            
+            // Re-schedule reminder on every app launch (alarms are lost on reinstall/reboot)
+            try {
+                val prefs = userPreferencesManager.userPreferencesFlow.first()
+                if (prefs.reminderEnabled) {
+                    reminderScheduler.scheduleReminder(prefs.reminderTime)
+                }
+            } catch (_: Exception) {
+                // Ignore if preferences not yet available
+            }
         }
     }
 }

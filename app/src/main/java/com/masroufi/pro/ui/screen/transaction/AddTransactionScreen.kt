@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,7 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.masroufi.pro.R
@@ -231,7 +234,7 @@ fun AddTransactionScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Calculator Keypad
+            // Calculator Keypad - always LTR
             val keys = listOf(
                 listOf("1", "2", "3", "+"),
                 listOf("4", "5", "6", "-"),
@@ -239,6 +242,7 @@ fun AddTransactionScreen(
                 listOf(".", "0", "=", "÷")
             )
 
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -287,6 +291,7 @@ fun AddTransactionScreen(
                     Spacer(modifier = Modifier.height(4.dp))
                 }
             }
+            } // CompositionLocalProvider LTR
         }
     }
 }
