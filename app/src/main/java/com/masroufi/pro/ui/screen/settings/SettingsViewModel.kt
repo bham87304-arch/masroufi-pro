@@ -1,10 +1,12 @@
 package com.masroufi.pro.ui.screen.settings
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masroufi.pro.data.preferences.UserPreferencesManager
 import com.masroufi.pro.notification.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,13 +23,15 @@ data class SettingsUiState(
     val showCurrencyDialog: Boolean = false,
     val showThemeDialog: Boolean = false,
     val showLanguageDialog: Boolean = false,
-    val showClearDataDialog: Boolean = false
+    val showClearDataDialog: Boolean = false,
+    val languageChanged: Boolean = false
 )
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userPreferencesManager: UserPreferencesManager,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -66,7 +70,12 @@ class SettingsViewModel @Inject constructor(
     fun setLanguage(language: String) {
         viewModelScope.launch {
             userPreferencesManager.setLanguage(language)
+            // Save to SharedPrefs so attachBaseContext picks it up on restart
+            appContext.getSharedPreferences("language_prefs", Context.MODE_PRIVATE)
+                .edit().putString("app_language", language).apply()
             hideLanguageDialog()
+            // Signal that language changed — user needs to restart app
+            _uiState.update { it.copy(languageChanged = true) }
         }
     }
 

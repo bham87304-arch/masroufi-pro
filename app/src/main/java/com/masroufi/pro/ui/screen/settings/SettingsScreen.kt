@@ -64,6 +64,22 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            if (uiState.languageChanged) {
+                item {
+                    androidx.compose.material3.Card(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        colors = androidx.compose.material3.CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    ) {
+                        Text(
+                            text = "🌐 Restart the app to apply the new language",
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            }
             item {
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.default_currency)) },
