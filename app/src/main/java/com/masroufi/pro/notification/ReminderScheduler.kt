@@ -5,11 +5,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import java.util.Calendar
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ReminderScheduler @Inject constructor(
+class ReminderScheduler(
     private val context: Context
 ) {
     companion object {
@@ -33,13 +30,11 @@ class ReminderScheduler @Inject constructor(
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
-            // If the time has already passed today, schedule for tomorrow
             if (timeInMillis <= System.currentTimeMillis()) {
                 add(Calendar.DAY_OF_YEAR, 1)
             }
         }
 
-        // Schedule repeating alarm every day
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
