@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Paid
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -36,9 +37,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.masroufi.pro.R
 import com.masroufi.pro.data.model.Currency
 import com.masroufi.pro.ui.navigation.Screen
 
@@ -52,7 +56,7 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Settings") })
+            TopAppBar(title = { Text(stringResource(R.string.settings)) })
         }
     ) { paddingValues ->
         LazyColumn(
@@ -62,7 +66,7 @@ fun SettingsScreen(
         ) {
             item {
                 ListItem(
-                    headlineContent = { Text("Currency") },
+                    headlineContent = { Text(stringResource(R.string.default_currency)) },
                     supportingContent = { Text(uiState.currency) },
                     leadingContent = { Icon(Icons.Default.Paid, contentDescription = null) },
                     modifier = Modifier.clickable { viewModel.showCurrencyDialog() }
@@ -70,7 +74,7 @@ fun SettingsScreen(
             }
             item {
                 ListItem(
-                    headlineContent = { Text("Language") },
+                    headlineContent = { Text(stringResource(R.string.language)) },
                     supportingContent = {
                         val langText = when(uiState.language) {
                             "ar" -> "العربية"
@@ -85,7 +89,7 @@ fun SettingsScreen(
             }
             item {
                 ListItem(
-                    headlineContent = { Text("Theme") },
+                    headlineContent = { Text(stringResource(R.string.theme)) },
                     supportingContent = { Text(uiState.themeMode.replaceFirstChar { it.uppercase() }) },
                     leadingContent = { Icon(Icons.Default.ColorLens, contentDescription = null) },
                     modifier = Modifier.clickable { viewModel.showThemeDialog() }
@@ -93,7 +97,7 @@ fun SettingsScreen(
             }
             item {
                 ListItem(
-                    headlineContent = { Text("Daily Reminder") },
+                    headlineContent = { Text(stringResource(R.string.daily_reminder)) },
                     leadingContent = { Icon(Icons.Default.Notifications, contentDescription = null) },
                     trailingContent = {
                         Switch(
@@ -103,26 +107,46 @@ fun SettingsScreen(
                     }
                 )
             }
+            if (uiState.isReminderEnabled) {
+                item {
+                    val context = LocalContext.current
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.reminder_time)) },
+                        supportingContent = { Text(uiState.reminderTime) },
+                        leadingContent = { Icon(Icons.Default.Schedule, contentDescription = null) },
+                        modifier = Modifier.clickable {
+                            val parts = uiState.reminderTime.split(":")
+                            val hour = parts.getOrNull(0)?.toIntOrNull() ?: 20
+                            val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+                            android.app.TimePickerDialog(
+                                context,
+                                { _, h, m -> viewModel.setReminderTime(String.format("%02d:%02d", h, m)) },
+                                hour, minute, true
+                            ).show()
+                        }
+                    )
+                }
+            }
             
             item { HorizontalDivider() }
             
             item {
                 ListItem(
-                    headlineContent = { Text("Manage Categories") },
+                    headlineContent = { Text(stringResource(R.string.manage_categories)) },
                     leadingContent = { Icon(Icons.Default.Category, contentDescription = null) },
                     modifier = Modifier.clickable { navController.navigate(Screen.Categories.route) }
                 )
             }
             item {
                 ListItem(
-                    headlineContent = { Text("Manage Accounts") },
+                    headlineContent = { Text(stringResource(R.string.manage_accounts)) },
                     leadingContent = { Icon(Icons.Default.AccountBalanceWallet, contentDescription = null) },
                     modifier = Modifier.clickable { navController.navigate(Screen.Accounts.route) }
                 )
             }
             item {
                 ListItem(
-                    headlineContent = { Text("Sign In / Sync") },
+                    headlineContent = { Text(stringResource(R.string.sign_in)) },
                     leadingContent = { Icon(Icons.Default.Login, contentDescription = null) },
                     modifier = Modifier.clickable { navController.navigate(Screen.Auth.route) }
                 )
@@ -132,14 +156,14 @@ fun SettingsScreen(
             
             item {
                 ListItem(
-                    headlineContent = { Text("Clear Data") },
+                    headlineContent = { Text(stringResource(R.string.clear_data)) },
                     leadingContent = { Icon(Icons.Default.DeleteForever, contentDescription = null) },
                     modifier = Modifier.clickable { viewModel.showClearDataDialog() }
                 )
             }
             item {
                 ListItem(
-                    headlineContent = { Text("Version") },
+                    headlineContent = { Text(stringResource(R.string.version)) },
                     supportingContent = { Text("1.0.0") },
                     leadingContent = { Icon(Icons.Default.Info, contentDescription = null) }
                 )
@@ -149,7 +173,7 @@ fun SettingsScreen(
         if (uiState.showCurrencyDialog) {
             AlertDialog(
                 onDismissRequest = { viewModel.hideCurrencyDialog() },
-                title = { Text("Select Currency") },
+                title = { Text(stringResource(R.string.default_currency)) },
                 text = {
                     LazyColumn {
                         val currencies = Currency.getSupportedCurrencies()
@@ -174,7 +198,7 @@ fun SettingsScreen(
                 },
                 confirmButton = {
                     TextButton(onClick = { viewModel.hideCurrencyDialog() }) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             )
@@ -183,7 +207,7 @@ fun SettingsScreen(
         if (uiState.showLanguageDialog) {
             AlertDialog(
                 onDismissRequest = { viewModel.hideLanguageDialog() },
-                title = { Text("Select Language") },
+                title = { Text(stringResource(R.string.language)) },
                 text = {
                     Column {
                         val languages = listOf(
@@ -211,7 +235,7 @@ fun SettingsScreen(
                 },
                 confirmButton = {
                     TextButton(onClick = { viewModel.hideLanguageDialog() }) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             )
@@ -220,7 +244,7 @@ fun SettingsScreen(
         if (uiState.showThemeDialog) {
             AlertDialog(
                 onDismissRequest = { viewModel.hideThemeDialog() },
-                title = { Text("Select Theme") },
+                title = { Text(stringResource(R.string.theme)) },
                 text = {
                     Column {
                         listOf("system", "light", "dark").forEach { mode ->
@@ -236,14 +260,19 @@ fun SettingsScreen(
                                     onClick = { viewModel.setTheme(mode) }
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(mode.replaceFirstChar { it.uppercase() })
+                                val textTheme = when(mode) {
+                                    "light" -> stringResource(R.string.theme_light)
+                                    "dark" -> stringResource(R.string.theme_dark)
+                                    else -> stringResource(R.string.theme_system)
+                                }
+                                Text(textTheme)
                             }
                         }
                     }
                 },
                 confirmButton = {
                     TextButton(onClick = { viewModel.hideThemeDialog() }) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             )
@@ -252,18 +281,18 @@ fun SettingsScreen(
         if (uiState.showClearDataDialog) {
             AlertDialog(
                 onDismissRequest = { viewModel.hideClearDataDialog() },
-                title = { Text("Clear All Data") },
-                text = { Text("Are you sure you want to delete all data? This action cannot be undone.") },
+                title = { Text(stringResource(R.string.clear_data)) },
+                text = { Text(stringResource(R.string.confirm_clear_data)) },
                 confirmButton = {
                     TextButton(
                         onClick = { viewModel.clearData() }
                     ) {
-                        Text("Clear", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { viewModel.hideClearDataDialog() }) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             )

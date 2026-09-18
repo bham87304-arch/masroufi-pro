@@ -16,6 +16,7 @@ data class SettingsUiState(
     val themeMode: String = "system",
     val language: String = "en",
     val isReminderEnabled: Boolean = false,
+    val reminderTime: String = "20:00",
     val showCurrencyDialog: Boolean = false,
     val showThemeDialog: Boolean = false,
     val showLanguageDialog: Boolean = false,
@@ -38,7 +39,8 @@ class SettingsViewModel @Inject constructor(
                         currency = prefs.defaultCurrency,
                         themeMode = prefs.themeMode,
                         language = prefs.language,
-                        isReminderEnabled = prefs.reminderEnabled
+                        isReminderEnabled = prefs.reminderEnabled,
+                        reminderTime = prefs.reminderTime
                     )
                 }
             }
@@ -69,6 +71,12 @@ class SettingsViewModel @Inject constructor(
     fun toggleReminder(enabled: Boolean) {
         viewModelScope.launch {
             userPreferencesManager.setReminderEnabled(enabled)
+        }
+    }
+
+    fun setReminderTime(time: String) {
+        viewModelScope.launch {
+            userPreferencesManager.setReminderTime(time)
         }
     }
 

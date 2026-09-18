@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -131,8 +133,13 @@ fun CategoriesScreen(
                                 size = 48.dp
                             )
                             Spacer(modifier = Modifier.height(8.dp))
+                            val displayName = when (java.util.Locale.getDefault().language) {
+                                "ar" -> category.nameAr.ifEmpty { category.name }
+                                "fr" -> category.nameFr.ifEmpty { category.name }
+                                else -> category.name
+                            }
                             Text(
-                                text = category.name,
+                                text = displayName,
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -197,7 +204,7 @@ fun CategoryDialog(
         onDismissRequest = onDismiss,
         title = { Text(if (category == null) "Add Category" else "Edit Category") },
         text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
