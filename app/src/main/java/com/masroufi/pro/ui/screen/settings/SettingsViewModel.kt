@@ -82,6 +82,10 @@ class SettingsViewModel @Inject constructor(
     fun toggleReminder(enabled: Boolean) {
         viewModelScope.launch {
             userPreferencesManager.setReminderEnabled(enabled)
+            // Also save to SharedPrefs so BroadcastReceiver can read it
+            appContext.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
+                .edit().putBoolean("reminder_enabled", enabled)
+                .putString("reminder_time", _uiState.value.reminderTime).apply()
             if (enabled) {
                 reminderScheduler.scheduleReminder(_uiState.value.reminderTime)
             } else {
@@ -94,6 +98,10 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesManager.setReminderTime(time)
             _uiState.update { it.copy(reminderTime = time) }
+            // Also save to SharedPrefs so BroadcastReceiver can read it
+            appContext.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
+                .edit().putBoolean("reminder_enabled", _uiState.value.isReminderEnabled)
+                .putString("reminder_time", time).apply()
             if (_uiState.value.isReminderEnabled) {
                 reminderScheduler.scheduleReminder(time)
             }

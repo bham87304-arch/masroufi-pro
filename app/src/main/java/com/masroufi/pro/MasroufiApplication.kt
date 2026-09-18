@@ -1,6 +1,7 @@
 package com.masroufi.pro
 
 import android.app.Application
+import android.content.Context
 import com.masroufi.pro.data.local.database.DatabaseSeeder
 import com.masroufi.pro.data.preferences.UserPreferencesManager
 import com.masroufi.pro.notification.ReminderScheduler
@@ -37,6 +38,12 @@ class MasroufiApplication : Application() {
                 val prefs = userPreferencesManager.userPreferencesFlow.first()
                 if (prefs.reminderEnabled) {
                     reminderScheduler.scheduleReminder(prefs.reminderTime)
+                    // Sync to SharedPrefs so BroadcastReceiver can read for rescheduling
+                    getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
+                        .edit()
+                        .putBoolean("reminder_enabled", true)
+                        .putString("reminder_time", prefs.reminderTime)
+                        .apply()
                 }
             } catch (_: Exception) {
                 // Ignore if preferences not yet available
