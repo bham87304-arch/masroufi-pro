@@ -33,12 +33,22 @@ val PredefinedColors = listOf(
     0xFFF44336, 0xFFE91E63, 0xFF9C27B0, 0xFF673AB7, 
     0xFF3F51B5, 0xFF2196F3, 0xFF03A9F4, 0xFF00BCD4,
     0xFF009688, 0xFF4CAF50, 0xFF8BC34A, 0xFFCDDC39,
-    0xFFFFEB3B, 0xFFFFC107, 0xFFFF9800, 0xFFFF5722
+    0xFFFFEB3B, 0xFFFFC107, 0xFFFF9800, 0xFFFF5722,
+    0xFF795548, 0xFF9E9E9E, 0xFF607D8B, 0xFF8D6E63,
+    0xFF546E7A, 0xFFC2185B, 0xFF512DA8, 0xFF303F9F,
+    0xFF1976D2, 0xFF00796B, 0xFF388E3C, 0xFFFBC02D,
+    0xFFF57C00, 0xFFE64A19, 0xFFD32F2F, 0xFF1976D2
 )
 
 val PredefinedIcons = listOf(
-    "shopping_cart", "home", "directions_car", "fastfood", 
-    "health_and_safety", "attach_money", "account_balance_wallet", "school", "flight", "category"
+    "shopping_cart", "home", "directions_car", "phone", "restaurant",
+    "checkroom", "medical_services", "sports_esports", "school", "spa",
+    "flight", "more_horiz", "payments", "work", "card_giftcard",
+    "trending_up", "savings", "account_balance", "account_balance_wallet",
+    "fastfood", "health_and_safety", "attach_money", "category",
+    "star", "favorite", "person", "email", "search", "settings", "place",
+    "local_dining", "build", "pets", "music_note", "wifi", "fitness",
+    "book", "camera", "coffee", "brush", "local_gas_station", "movie"
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -212,43 +222,69 @@ fun CategoryDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Text("Icon", style = MaterialTheme.typography.labelMedium)
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                val chunkedIcons = PredefinedIcons.chunked(6)
+                Column(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(PredefinedIcons) { icon ->
-                        val isSelected = selectedIcon == icon
-                        Box(
+                    chunkedIcons.forEach { rowIcons ->
+                        Row(
                             modifier = Modifier
-                                .size(48.dp)
-                                .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent, CircleShape)
-                                .clickable { selectedIcon = icon },
-                            contentAlignment = Alignment.Center
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            CategoryIcon(iconName = icon, color = MaterialTheme.colorScheme.onSurface, size = 32.dp)
+                            rowIcons.forEach { icon ->
+                                val isSelected = selectedIcon == icon
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent, CircleShape)
+                                        .clickable { selectedIcon = icon },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CategoryIcon(iconName = icon, color = MaterialTheme.colorScheme.onSurface, size = 28.dp)
+                                }
+                            }
+                            // Fill empty spaces in the last row so icons align properly
+                            repeat(6 - rowIcons.size) {
+                                Spacer(modifier = Modifier.size(40.dp))
+                            }
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Text("Color", style = MaterialTheme.typography.labelMedium)
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                val chunkedColors = PredefinedColors.chunked(6)
+                Column(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(PredefinedColors) { color ->
-                        val isSelected = selectedColor == color
-                        Box(
+                    chunkedColors.forEach { rowColors ->
+                        Row(
                             modifier = Modifier
-                                .size(48.dp)
-                                .background(Color(color), CircleShape)
-                                .border(
-                                    width = if (isSelected) 3.dp else 0.dp,
-                                    color = if (isSelected) MaterialTheme.colorScheme.onSurface else Color.Transparent,
-                                    shape = CircleShape
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            rowColors.forEach { color ->
+                                val isSelected = selectedColor == color
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .background(Color(color), CircleShape)
+                                        .border(
+                                            width = if (isSelected) 3.dp else 0.dp,
+                                            color = if (isSelected) MaterialTheme.colorScheme.onSurface else Color.Transparent,
+                                            shape = CircleShape
+                                        )
+                                        .clickable { selectedColor = color }
                                 )
-                                .clickable { selectedColor = color }
-                        )
+                            }
+                            // Fill empty spaces in the last row so colors align properly
+                            repeat(6 - rowColors.size) {
+                                Spacer(modifier = Modifier.size(40.dp))
+                            }
+                        }
                     }
                 }
             }

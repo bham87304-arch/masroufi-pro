@@ -39,25 +39,73 @@ fun CategoryIcon(
 
 fun mapIconName(name: String): ImageVector {
     return when (name) {
+        // Shopping & Food
         "shopping_cart" -> Icons.Default.ShoppingCart
+        "fastfood" -> Icons.Default.Fastfood
+        "restaurant" -> Icons.Default.Restaurant
+        "local_dining" -> Icons.Default.LocalDining
+        "coffee" -> Icons.Default.LocalCafe
+
+        // Transport & Travel
+        "directions_car" -> Icons.Default.DirectionsCar
+        "flight" -> Icons.Default.Flight
+        "local_gas_station" -> Icons.Default.LocalGasStation
+        "place" -> Icons.Default.Place
+
+        // Home & Living
         "home" -> Icons.Default.Home
-        "directions_car" -> Icons.Default.Place
-        "phone" -> Icons.Default.Phone
-        "restaurant" -> Icons.Default.Star
-        "checkroom" -> Icons.Default.Person
-        "medical_services" -> Icons.Default.Favorite
-        "sports_esports" -> Icons.Default.Star
-        "school" -> Icons.Default.Person
-        "spa" -> Icons.Default.FavoriteBorder
-        "flight" -> Icons.Default.Place
-        "more_horiz" -> Icons.Default.MoreHoriz
-        "payments" -> Icons.Default.AttachMoney
+        "build" -> Icons.Default.Build
+
+        // Health & Wellness
+        "health_and_safety" -> Icons.Default.HealthAndSafety
+        "medical_services" -> Icons.Default.MedicalServices
+        "spa" -> Icons.Default.Spa
+        "fitness" -> Icons.Default.FitnessCenter
+        "favorite" -> Icons.Default.Favorite
+
+        // People & Education
+        "person" -> Icons.Default.Person
+        "school" -> Icons.Default.School
+        "checkroom" -> Icons.Default.Checkroom
+
+        // Money & Finance
+        "attach_money" -> Icons.Default.AttachMoney
+        "payments" -> Icons.Default.Payments
+        "account_balance" -> Icons.Default.AccountBalance
+        "account_balance_wallet" -> Icons.Default.AccountBalanceWallet
+        "savings" -> Icons.Default.Savings
+        "trending_up" -> Icons.Default.TrendingUp
+
+        // Work & Business
         "work" -> Icons.Default.Work
         "card_giftcard" -> Icons.Default.CardGiftcard
-        "trending_up" -> Icons.Default.TrendingUp
-        "savings" -> Icons.Default.AttachMoney
-        "account_balance" -> Icons.Default.Home
-        "account_balance_wallet" -> Icons.Default.AttachMoney
-        else -> Icons.Default.Star
+
+        // Communication & Tech
+        "phone" -> Icons.Default.Phone
+        "email" -> Icons.Default.Email
+        "wifi" -> Icons.Default.Wifi
+
+        // Entertainment & Hobbies
+        "sports_esports" -> Icons.Default.SportsEsports
+        "movie" -> Icons.Default.Movie
+        "music_note" -> Icons.Default.MusicNote
+        "camera" -> Icons.Default.CameraAlt
+        "book" -> Icons.Default.Book
+        "brush" -> Icons.Default.Brush
+        "pets" -> Icons.Default.Pets
+
+        // General
+        "star" -> Icons.Default.Star
+        "search" -> Icons.Default.Search
+        "settings" -> Icons.Default.Settings
+        "more_horiz" -> Icons.Default.MoreHoriz
+        "category" -> Icons.Default.Category
+        "notifications" -> Icons.Default.Notifications
+        "lock" -> Icons.Default.Lock
+        "cloud" -> Icons.Default.Cloud
+        "calendar" -> Icons.Default.DateRange
+        "lightbulb" -> Icons.Default.Lightbulb
+
+        else -> Icons.Default.Category
     }
 }
