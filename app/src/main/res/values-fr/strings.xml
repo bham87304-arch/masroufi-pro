@@ -112,4 +112,9 @@
     <string name="already_have_account">Vous avez déjà un compte ? Se connecter</string>
     <string name="signed_in_as">Connecté en tant que</string>
     <string name="data_synced">Vos données sont synchronisées dans le cloud</string>
+    <string name="verify_email">Vérifier l\'email</string>
+    <string name="otp_sent_to">Un code à 6 chiffres a été envoyé à\n%1$s</string>
+    <string name="verification_code">Code de vérification</string>
+    <string name="verify">Vérifier</string>
+    <string name="resend_code">Vous n\'avez pas reçu le code ? Renvoyer</string>
 </resources>

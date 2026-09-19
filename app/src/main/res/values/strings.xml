@@ -112,4 +112,9 @@
     <string name="already_have_account">Already have an account? Sign In</string>
     <string name="signed_in_as">Signed in as</string>
     <string name="data_synced">Your data is being synced to the cloud</string>
+    <string name="verify_email">Verify Email</string>
+    <string name="otp_sent_to">A 6-digit code was sent to\n%1$s</string>
+    <string name="verification_code">Verification Code</string>
+    <string name="verify">Verify</string>
+    <string name="resend_code">Didn\'t receive the code? Resend</string>
 </resources>

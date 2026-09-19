@@ -112,4 +112,9 @@
     <string name="already_have_account">لديك حساب بالفعل؟ تسجيل الدخول</string>
     <string name="signed_in_as">تم تسجيل الدخول كـ</string>
     <string name="data_synced">يتم مزامنة بياناتك في السحابة</string>
+    <string name="verify_email">تحقق من البريد</string>
+    <string name="otp_sent_to">تم إرسال رمز مكون من 6 أرقام إلى\n%1$s</string>
+    <string name="verification_code">رمز التحقق</string>
+    <string name="verify">تحقق</string>
+    <string name="resend_code">لم تستلم الرمز؟ إعادة الإرسال</string>
 </resources>
