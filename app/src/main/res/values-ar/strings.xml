@@ -107,13 +107,9 @@
     <string name="no_reminders">لا توجد تذكيرات بعد. اضغط + لإضافة واحد.</string>
     <string name="reminder_title">العنوان (اختياري)</string>
     <string name="add">إضافة</string>
-    <string name="sign_up">إنشاء حساب</string>
-    <string name="sign_out">تسجيل الخروج</string>
     <string name="create_account">أنشئ حسابك لحفظ بياناتك</string>
     <string name="sign_in_subtitle">سجل الدخول لمزامنة بياناتك عبر الأجهزة</string>
     <string name="already_have_account">لديك حساب بالفعل؟ تسجيل الدخول</string>
     <string name="signed_in_as">تم تسجيل الدخول كـ</string>
     <string name="data_synced">يتم مزامنة بياناتك في السحابة</string>
-    <string name="sync_now">مزامنة الآن</string>
-    <string name="edit_transaction">تعديل المعاملة</string>
 </resources>

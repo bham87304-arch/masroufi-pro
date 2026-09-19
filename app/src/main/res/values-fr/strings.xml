@@ -107,13 +107,9 @@
     <string name="no_reminders">Aucun rappel. Appuyez sur + pour en ajouter un.</string>
     <string name="reminder_title">Titre (facultatif)</string>
     <string name="add">Ajouter</string>
-    <string name="sign_up">Créer un compte</string>
-    <string name="sign_out">Déconnexion</string>
     <string name="create_account">Créez votre compte pour sauvegarder vos données</string>
     <string name="sign_in_subtitle">Connectez-vous pour synchroniser vos données</string>
     <string name="already_have_account">Vous avez déjà un compte ? Se connecter</string>
     <string name="signed_in_as">Connecté en tant que</string>
     <string name="data_synced">Vos données sont synchronisées dans le cloud</string>
-    <string name="sync_now">Synchroniser</string>
-    <string name="edit_transaction">Modifier la transaction</string>
 </resources>
