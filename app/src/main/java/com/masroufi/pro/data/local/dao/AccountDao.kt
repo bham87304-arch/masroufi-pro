@@ -30,4 +30,13 @@ interface AccountDao {
 
     @Query("SELECT COUNT(*) FROM accounts")
     suspend fun getAccountCount(): Int
+
+    @Query("SELECT * FROM accounts WHERE isSynced = 0")
+    suspend fun getUnsyncedAccounts(): List<AccountEntity>
+
+    @Query("UPDATE accounts SET isSynced = 1 WHERE id = :id")
+    suspend fun markAsSynced(id: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAccount(entity: AccountEntity)
 }

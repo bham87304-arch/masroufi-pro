@@ -34,4 +34,13 @@ interface CategoryDao {
 
     @Query("SELECT COUNT(*) FROM categories")
     suspend fun getCategoryCount(): Int
+
+    @Query("SELECT * FROM categories WHERE isSynced = 0")
+    suspend fun getUnsyncedCategories(): List<CategoryEntity>
+
+    @Query("UPDATE categories SET isSynced = 1 WHERE id = :id")
+    suspend fun markAsSynced(id: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertCategory(entity: CategoryEntity)
 }

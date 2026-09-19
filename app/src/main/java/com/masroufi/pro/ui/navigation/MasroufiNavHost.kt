@@ -110,7 +110,7 @@ fun MasroufiNavHost() {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Dashboard.route,
+            startDestination = Screen.Auth.route,
             modifier = Modifier.padding(padding)
         ) {
             // Main tab destinations
@@ -144,7 +144,15 @@ fun MasroufiNavHost() {
             composable(Screen.Categories.route) { CategoriesScreen() }
             composable(Screen.Accounts.route) { AccountsScreen() }
             composable(Screen.Reminders.route) { RemindersScreen(navController = navController) }
-            composable(Screen.Auth.route) { AuthScreen() }
+            composable(Screen.Auth.route) {
+                AuthScreen(
+                    onAuthSuccess = {
+                        navController.navigate(Screen.Dashboard.route) {
+                            popUpTo(Screen.Auth.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
         }
     }
 }

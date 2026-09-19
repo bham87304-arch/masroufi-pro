@@ -51,4 +51,16 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE isDeleted = 0 AND note LIKE '%' || :query || '%' ORDER BY date DESC")
     fun searchTransactions(query: String): Flow<List<TransactionEntity>>
+
+    @Query("SELECT * FROM transactions WHERE isSynced = 0 AND isDeleted = 0")
+    suspend fun getUnsyncedTransactions(): List<TransactionEntity>
+
+    @Query("SELECT * FROM transactions WHERE isSynced = 0 AND isDeleted = 1")
+    suspend fun getUnsyncedDeletedTransactions(): List<TransactionEntity>
+
+    @Query("UPDATE transactions SET isSynced = 1 WHERE id = :id")
+    suspend fun markTransactionAsSynced(id: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertTransaction(entity: TransactionEntity)
 }

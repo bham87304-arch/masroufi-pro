@@ -15,5 +15,8 @@ data class CategoryEntity(
     val color: Long,
     val type: TransactionType,
     val isDefault: Boolean = false,
-    val sortOrder: Int = 0
+    val sortOrder: Int = 0,
+    val updatedAt: Long = System.currentTimeMillis(),
+    val isSynced: Boolean = false,
+    val isDeleted: Boolean = false
 )

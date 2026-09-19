@@ -10,6 +10,7 @@ import com.masroufi.pro.data.local.dao.CurrencyRateDao
 import com.masroufi.pro.data.local.dao.ReminderDao
 import com.masroufi.pro.data.local.dao.TransactionDao
 import com.masroufi.pro.data.local.database.MasroufiDatabase
+import com.masroufi.pro.data.local.database.MIGRATION_2_3
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,7 +45,7 @@ object DatabaseModule {
             MasroufiDatabase::class.java,
             "masroufi_database"
         )
-        .addMigrations(MIGRATION_1_2)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
         .fallbackToDestructiveMigration()
         .build()
     }

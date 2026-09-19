@@ -12,5 +12,8 @@ data class AccountEntity(
     val icon: String = "account_balance_wallet",
     val color: Long = 0xFF2E7D32,
     val initialBalance: Double = 0.0,
-    val isDefault: Boolean = false
+    val isDefault: Boolean = false,
+    val updatedAt: Long = System.currentTimeMillis(),
+    val isSynced: Boolean = false,
+    val isDeleted: Boolean = false
 )

@@ -23,7 +23,7 @@ import com.masroufi.pro.data.local.entity.TransactionEntity
         CurrencyRateEntity::class,
         ReminderEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -33,4 +33,15 @@ abstract class MasroufiDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun currencyRateDao(): CurrencyRateDao
     abstract fun reminderDao(): ReminderDao
+}
+
+val MIGRATION_2_3 = object : androidx.room.migration.Migration(2, 3) {
+    override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE categories ADD COLUMN updatedAt INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE categories ADD COLUMN isSynced INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE categories ADD COLUMN isDeleted INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE accounts ADD COLUMN updatedAt INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE accounts ADD COLUMN isSynced INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE accounts ADD COLUMN isDeleted INTEGER NOT NULL DEFAULT 0")
+    }
 }
