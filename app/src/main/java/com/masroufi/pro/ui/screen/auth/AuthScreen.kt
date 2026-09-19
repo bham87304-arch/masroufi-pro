@@ -33,7 +33,8 @@ import com.masroufi.pro.R
 @Composable
 fun AuthScreen(
     viewModel: AuthViewModel = hiltViewModel(),
-    onAuthSuccess: (() -> Unit)? = null
+    onAuthSuccess: (() -> Unit)? = null,
+    onSignOut: (() -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var passwordVisible by remember { mutableStateOf(false) }
@@ -70,7 +71,10 @@ fun AuthScreen(
             uiState.isSignedIn -> {
                 SignedInContent(
                     email = uiState.userEmail ?: "",
-                    onSignOut = { viewModel.signOut() },
+                    onSignOut = {
+                        viewModel.signOut()
+                        onSignOut?.invoke()
+                    },
                     modifier = Modifier.padding(padding)
                 )
             }

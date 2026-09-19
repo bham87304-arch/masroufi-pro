@@ -150,6 +150,11 @@ fun MasroufiNavHost() {
                         navController.navigate(Screen.Dashboard.route) {
                             popUpTo(Screen.Auth.route) { inclusive = true }
                         }
+                    },
+                    onSignOut = {
+                        navController.navigate(Screen.Auth.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 )
             }
