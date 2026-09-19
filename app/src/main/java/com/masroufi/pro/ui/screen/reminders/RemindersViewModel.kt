@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masroufi.pro.data.local.dao.ReminderDao
 import com.masroufi.pro.data.local.entity.ReminderEntity
-import com.masroufi.pro.notification.ReminderScheduler
+import com.masroufi.pro.notification.ReminderWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,7 +17,6 @@ import javax.inject.Inject
 @HiltViewModel
 class RemindersViewModel @Inject constructor(
     private val reminderDao: ReminderDao,
-    private val reminderScheduler: ReminderScheduler,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
@@ -33,7 +32,7 @@ class RemindersViewModel @Inject constructor(
                 isEnabled = true
             )
             reminderDao.insertReminder(reminder)
-            scheduleAlarm(reminder)
+            ReminderWorker.schedule(appContext, reminder.id, hour, minute, title)
         }
     }
 
@@ -42,34 +41,17 @@ class RemindersViewModel @Inject constructor(
             val updated = reminder.copy(isEnabled = !reminder.isEnabled)
             reminderDao.updateReminder(updated)
             if (updated.isEnabled) {
-                scheduleAlarm(updated)
+                ReminderWorker.schedule(appContext, updated.id, updated.hour, updated.minute, updated.title)
             } else {
-                reminderScheduler.cancelReminder(updated.id)
+                ReminderWorker.cancel(appContext, updated.id)
             }
         }
     }
 
     fun deleteReminder(reminder: ReminderEntity) {
         viewModelScope.launch {
-            reminderScheduler.cancelReminder(reminder.id)
+            ReminderWorker.cancel(appContext, reminder.id)
             reminderDao.deleteReminder(reminder)
-        }
-    }
-
-    private fun scheduleAlarm(reminder: ReminderEntity) {
-        reminderScheduler.scheduleReminder(reminder.id, reminder.hour, reminder.minute, reminder.title)
-        // Save time to SharedPrefs for receiver rescheduling
-        val timeStr = String.format("%02d:%02d", reminder.hour, reminder.minute)
-        appContext.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
-            .edit()
-            .putString("time_${reminder.id}", timeStr)
-            .apply()
-    }
-
-    fun rescheduleAllEnabled() {
-        viewModelScope.launch {
-            val enabledReminders = reminderDao.getEnabledReminders()
-            enabledReminders.forEach { scheduleAlarm(it) }
         }
     }
 }

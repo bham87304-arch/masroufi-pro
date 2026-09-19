@@ -19,22 +19,17 @@ class BootReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
-            Log.d("BootReceiver", "Device booted, rescheduling reminders")
-            val scheduler = ReminderScheduler(context)
+            Log.d("BootReceiver", "Device booted, rescheduling reminders via WorkManager")
             val pendingResult = goAsync()
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val enabledReminders = reminderDao.getEnabledReminders()
                     enabledReminders.forEach { reminder ->
-                        scheduler.scheduleReminder(
-                            reminder.id, reminder.hour, reminder.minute, reminder.title
+                        ReminderWorker.schedule(
+                            context, reminder.id, reminder.hour, reminder.minute, reminder.title
                         )
-                        val timeStr = String.format("%02d:%02d", reminder.hour, reminder.minute)
-                        context.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
-                            .edit()
-                            .putString("time_${reminder.id}", timeStr)
-                            .apply()
                     }
+                    Log.d("BootReceiver", "Rescheduled ${enabledReminders.size} reminders")
                 } catch (e: Exception) {
                     Log.w("BootReceiver", "Failed to reschedule: ${e.message}")
                 } finally {

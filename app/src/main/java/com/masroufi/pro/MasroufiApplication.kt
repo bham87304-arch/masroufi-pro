@@ -1,10 +1,9 @@
 package com.masroufi.pro
 
 import android.app.Application
-import android.content.Context
 import com.masroufi.pro.data.local.dao.ReminderDao
 import com.masroufi.pro.data.local.database.DatabaseSeeder
-import com.masroufi.pro.notification.ReminderScheduler
+import com.masroufi.pro.notification.ReminderWorker
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,9 +18,6 @@ class MasroufiApplication : Application() {
     lateinit var databaseSeeder: DatabaseSeeder
 
     @Inject
-    lateinit var reminderScheduler: ReminderScheduler
-
-    @Inject
     lateinit var reminderDao: ReminderDao
     
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -32,22 +28,15 @@ class MasroufiApplication : Application() {
             databaseSeeder.seedDefaultCategories()
             databaseSeeder.seedDefaultAccount()
             
-            // Re-schedule all enabled reminders on app launch
-            // Cancel first to avoid duplicate alarms
+            // Re-schedule all enabled reminders via WorkManager
+            // WorkManager handles dedup via REPLACE policy
             try {
                 val enabledReminders = reminderDao.getEnabledReminders()
                 enabledReminders.forEach { reminder ->
-                    // Cancel existing alarm first, then re-schedule
-                    reminderScheduler.cancelReminder(reminder.id)
-                    reminderScheduler.scheduleReminder(
+                    ReminderWorker.schedule(
+                        this@MasroufiApplication,
                         reminder.id, reminder.hour, reminder.minute, reminder.title
                     )
-                    // Save time to SharedPrefs for receiver rescheduling
-                    val timeStr = String.format("%02d:%02d", reminder.hour, reminder.minute)
-                    getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
-                        .edit()
-                        .putString("time_${reminder.id}", timeStr)
-                        .apply()
                 }
             } catch (_: Exception) {
                 // Ignore if database not yet available

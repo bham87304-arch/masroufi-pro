@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masroufi.pro.data.preferences.UserPreferencesManager
-import com.masroufi.pro.notification.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,8 +17,6 @@ data class SettingsUiState(
     val currency: String = "DZD",
     val themeMode: String = "system",
     val language: String = "en",
-    val isReminderEnabled: Boolean = false,
-    val reminderTime: String = "20:00",
     val showCurrencyDialog: Boolean = false,
     val showThemeDialog: Boolean = false,
     val showLanguageDialog: Boolean = false,
@@ -30,7 +27,6 @@ data class SettingsUiState(
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userPreferencesManager: UserPreferencesManager,
-    private val reminderScheduler: ReminderScheduler,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
@@ -44,9 +40,7 @@ class SettingsViewModel @Inject constructor(
                     it.copy(
                         currency = prefs.defaultCurrency,
                         themeMode = prefs.themeMode,
-                        language = prefs.language,
-                        isReminderEnabled = prefs.reminderEnabled,
-                        reminderTime = prefs.reminderTime
+                        language = prefs.language
                     )
                 }
             }
@@ -76,35 +70,6 @@ class SettingsViewModel @Inject constructor(
             hideLanguageDialog()
             // Signal that language changed — user needs to restart app
             _uiState.update { it.copy(languageChanged = true) }
-        }
-    }
-
-    fun toggleReminder(enabled: Boolean) {
-        viewModelScope.launch {
-            userPreferencesManager.setReminderEnabled(enabled)
-            // Also save to SharedPrefs so BroadcastReceiver can read it
-            appContext.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
-                .edit().putBoolean("reminder_enabled", enabled)
-                .putString("reminder_time", _uiState.value.reminderTime).apply()
-            if (enabled) {
-                reminderScheduler.scheduleReminder(_uiState.value.reminderTime)
-            } else {
-                reminderScheduler.cancelReminder()
-            }
-        }
-    }
-
-    fun setReminderTime(time: String) {
-        viewModelScope.launch {
-            userPreferencesManager.setReminderTime(time)
-            _uiState.update { it.copy(reminderTime = time) }
-            // Also save to SharedPrefs so BroadcastReceiver can read it
-            appContext.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
-                .edit().putBoolean("reminder_enabled", _uiState.value.isReminderEnabled)
-                .putString("reminder_time", time).apply()
-            if (_uiState.value.isReminderEnabled) {
-                reminderScheduler.scheduleReminder(time)
-            }
         }
     }
 
