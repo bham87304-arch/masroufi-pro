@@ -265,7 +265,7 @@ class SyncManager @Inject constructor(
     private fun AccountEntity.toRemote(userId: String) = RemoteAccount(
         id = id, user_id = userId, name = name, currency = currency,
         icon = icon, color = color, initial_balance = initialBalance,
-        is_default = isDefault, updated_at = updatedAt, is_deleted = is_deleted
+        is_default = isDefault, updated_at = updatedAt, is_deleted = isDeleted
     )
 
     private fun RemoteAccount.toLocal() = AccountEntity(

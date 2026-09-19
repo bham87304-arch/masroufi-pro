@@ -72,13 +72,18 @@ class AuthViewModel @Inject constructor(
                         }
                         Log.d(TAG, "Not authenticated")
                     }
-                    is SessionStatus.LoadingFromStorage -> {
+                    is SessionStatus.Initializing -> {
                         _uiState.update { it.copy(isLoading = true) }
                     }
-                    is SessionStatus.NetworkError -> {
+                    is SessionStatus.RefreshFailure -> {
                         _uiState.update {
-                            it.copy(isLoading = false, error = "Network error. Please check your connection.")
+                            it.copy(
+                                isSignedIn = false,
+                                isLoading = false,
+                                error = "Session expired. Please sign in again."
+                            )
                         }
+                        Log.d(TAG, "Refresh failure")
                     }
                 }
             }
