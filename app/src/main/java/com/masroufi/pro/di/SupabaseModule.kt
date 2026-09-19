@@ -1,6 +1,5 @@
 package com.masroufi.pro.di
 
-import com.masroufi.pro.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,12 +14,15 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object SupabaseModule {
 
+    private const val SUPABASE_URL = "https://jtjlggbmiydgrcrlavvk.supabase.co"
+    private const val SUPABASE_KEY = "sb_publishable_rwfmLTpt0f6CL6H2-y3WNQ_vAkEN7pY"
+
     @Provides
     @Singleton
     fun provideSupabaseClient(): SupabaseClient {
         return createSupabaseClient(
-            supabaseUrl = BuildConfig.SUPABASE_URL,
-            supabaseKey = BuildConfig.SUPABASE_ANON_KEY
+            supabaseUrl = SUPABASE_URL,
+            supabaseKey = SUPABASE_KEY
         ) {
             install(Auth)
             install(Postgrest)
