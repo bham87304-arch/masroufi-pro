@@ -15,7 +15,7 @@ import javax.inject.Singleton
 object SupabaseModule {
 
     private const val SUPABASE_URL = "https://jtjlggbmiydgrcrlavvk.supabase.co"
-    private const val SUPABASE_KEY = "sb_publishable_rwfmLTpt0f6CL6H2-y3WNQ_vAkEN7pY"
+    private const val SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0amxnZ2JtaXlkZ3JjcmxhdnZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4Mjc4MzYsImV4cCI6MjEwNTQwMzgzNn0.FmNghgkh19AQPzq2IWNQVMnKiEwa14q9VJBDpCkN5UY"
 
     @Provides
     @Singleton
